@@ -1,0 +1,12 @@
+{
+  "output": "C:\\Users\\kiana\\Desktop\\portfolio\\tools\\_bgtest\\generated\\skyscraper07-original.glb",
+  "file_size_bytes": 2505756,
+  "vertex_count": 22691,
+  "triangle_count": 44834,
+  "material_count": 3,
+  "materials": [
+    "Metal01",
+    "Easy Glass",
+    "Easy GlassC"
+  ]
+}

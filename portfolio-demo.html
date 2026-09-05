@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Portfolio — Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg-deep:#0a0c11;
+    --ink:#e9e6dc;
+    --muted:#7d8494;
+    --screen-glow:#5fd6c2;
+    --warm:#d9713a;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html,body{
+    width:100%;height:100%;
+    background:var(--bg-deep);
+    overflow:hidden;
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--ink);
+  }
+  #app{position:relative;width:100vw;height:100vh;transition:opacity 0.6s ease;}
+  #app.fade-out{opacity:0;}
+  #loadingOverlay{
+    position:fixed;inset:0;z-index:999;
+    background:var(--bg-deep);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'IBM Plex Mono', monospace;
+    color:var(--muted);font-size:13px;letter-spacing:0.08em;
+    transition:opacity 0.5s ease;
+  }
+  #loadingOverlay.hidden{opacity:0;pointer-events:none;}
+  #loadingOverlay .dot{
+    display:inline-block;width:6px;height:6px;border-radius:50%;
+    background:var(--screen-glow);margin-left:8px;
+    animation:loadPulse 1s ease-in-out infinite;
+  }
+  @keyframes loadPulse{0%,100%{opacity:0.3;}50%{opacity:1;}}
+  canvas{display:block;position:absolute;inset:0;}
+  .vignette{
+    position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,0.55) 100%);
+  }
+  .ui-layer{position:absolute;inset:0;pointer-events:none;}
+  .status-tl{
+    position:absolute;top:28px;left:32px;
+    font-size:11px;letter-spacing:0.08em;color:var(--muted);
+    opacity:0.8;
+  }
+  .status-tl span{color:var(--screen-glow);}
+  .hint{
+    position:absolute;left:50%;bottom:64px;transform:translateX(-50%);
+    font-size:13px;letter-spacing:0.06em;color:var(--ink);
+    transition:opacity 0.6s ease;
+    pointer-events:none;
+    white-space:nowrap;
+  }
+  .hint.hidden{opacity:0;animation:none;}
+  .hint{animation:flicker 4.5s ease-in-out infinite;}
+  .hint .cursor{
+    display:inline-block;margin-left:2px;
+    animation:blink 1s step-end infinite;
+  }
+  @keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+  @keyframes flicker{
+    0%, 15%, 17%, 19%, 60%, 62%, 100%{opacity:1;}
+    16%, 18%, 61%{opacity:0.25;}
+    40%{opacity:0.85;}
+  }
+  .enter-link{
+    position:absolute;left:50%;bottom:64px;transform:translateX(-50%);
+    font-size:13px;letter-spacing:0.06em;color:var(--screen-glow);
+    font-family:'IBM Plex Mono', monospace;text-decoration:none;
+    opacity:0;transition:opacity 0.5s ease;
+    pointer-events:none;
+  }
+  .enter-link.show{opacity:1;pointer-events:auto;}
+  .enter-link:hover{color:var(--ink);}
+  .social{
+    position:absolute;top:28px;right:32px;
+    display:flex;gap:12px;pointer-events:auto;
+  }
+  .social a{
+    width:38px;height:38px;border-radius:50%;
+    border:1px solid rgba(233,230,220,0.18);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--muted);text-decoration:none;
+    transition:all 0.25s ease;
+    background:rgba(255,255,255,0.02);
+  }
+  .social a:hover{
+    color:var(--screen-glow);
+    border-color:var(--screen-glow);
+    box-shadow:0 0 14px rgba(95,214,194,0.35);
+  }
+  .social svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;}
+  .identity{
+    position:absolute;left:110px;bottom:70px;max-width:580px;
+    pointer-events:none;
+    opacity:1;transform:translateY(0);
+    transition:opacity 0.9s ease, transform 0.9s ease;
+  }
+  .identity .eyebrow{
+    font-size:13px;letter-spacing:0.12em;color:var(--warm);
+    margin-bottom:12px;text-transform:uppercase;
+  }
+  .identity h1{
+    font-family:'Space Grotesk', sans-serif;
+    font-weight:600;font-size:clamp(34px,5vw,56px);
+    letter-spacing:-0.01em;line-height:1.1;color:var(--ink);
+    margin-bottom:14px;
+  }
+  .identity p{
+    font-family:'Space Grotesk', sans-serif;
+    font-size:17px;color:var(--muted);line-height:1.6;font-weight:400;
+  }
+</style>
+</head>
+<body>
+<div id="loadingOverlay">loading scene<span class="dot"></span></div>
+<div id="app">
+  <div class="vignette"></div>
+  <div class="ui-layer">
+    <div class="status-tl">SESSION <span id="clock">00:00:00</span> // <span id="sysState">IDLE</span></div>
+    <div class="hint" id="hint"><span id="hintText"></span><span class="cursor">_</span></div>
+    <div class="social">
+      <a href="#" title="GitHub"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.58 2 12.25c0 4.53 2.87 8.37 6.84 9.73.5.1.68-.22.68-.5v-1.75c-2.78.62-3.37-1.36-3.37-1.36-.46-1.2-1.11-1.52-1.11-1.52-.91-.64.07-.63.07-.63 1 .07 1.53 1.05 1.53 1.05.9 1.57 2.34 1.12 2.91.86.09-.66.35-1.12.64-1.38-2.22-.26-4.56-1.14-4.56-5.05 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.72 0 0 .84-.28 2.75 1.05a9.3 9.3 0 0 1 5 0c1.9-1.33 2.74-1.05 2.74-1.05.56 1.42.2 2.46.1 2.72.65.72 1.03 1.63 1.03 2.75 0 3.92-2.34 4.78-4.57 5.04.36.32.68.94.68 1.9v2.82c0 .28.18.61.69.5A10.26 10.26 0 0 0 22 12.25C22 6.58 17.52 2 12 2Z"/></svg></a>
+      <a href="#" title="LinkedIn"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 10v7M7 7v.01M12 17v-4.5a2.5 2.5 0 0 1 5 0V17M12 17v-7"/></svg></a>
+      <a href="#" title="Email"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
+    </div>
+    <div class="identity" id="identity">
+      <div class="eyebrow">AI Agent Applications — Data — Product</div>
+      <h1>Kiana Shi</h1>
+      <p>M.S. student in Data Analytics Engineering at Northeastern University, with experience across machine learning, RAG, and agentic AI systems.</p>
+    </div>
+  </div>
+</div>
+<a class="enter-link" id="enterLink" href="desktop.html">[ enter → ]</a>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/MTLLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/OBJLoader.js"></script>
+<script>
+(function(){
+  var container = document.getElementById('app');
+  var W = window.innerWidth, H = window.innerHeight;
+
+  var scene = new THREE.Scene();
+  scene.background = new THREE.Color(0x0a0c11);
+  scene.fog = new THREE.Fog(0x0a0c11, 6, 40);
+
+  var camera = new THREE.PerspectiveCamera(42, W/H, 0.1, 100);
+  camera.position.set(0, 0.75, 3.85);
+
+  var renderer = new THREE.WebGLRenderer({antialias:true});
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(W, H);
+  container.insertBefore(renderer.domElement, container.firstChild);
+
+  // lights
+  var ambient = new THREE.AmbientLight(0x334a68, 0.85);
+  scene.add(ambient);
+
+  var warmLight = new THREE.PointLight(0x8fb4d9, 1.5, 14, 2);
+  warmLight.position.set(2.4, 2.6, -2.6);
+  scene.add(warmLight);
+
+  var screenLight = new THREE.PointLight(0x5fd6c2, 0.12, 5, 2);
+  screenLight.position.set(0, 0.15, 0.6);
+  scene.add(screenLight);
+
+  var fillLight = new THREE.PointLight(0x35507a, 0.6, 10);
+  fillLight.position.set(-3, 1.5, 1);
+  scene.add(fillLight);
+
+  var keyFill = new THREE.PointLight(0xcfd6e6, 0.4, 12, 2);
+  keyFill.position.set(0.2, 1.2, 3.4);
+  scene.add(keyFill);
+
+  // floor
+  var floor = new THREE.Mesh(
+    new THREE.PlaneGeometry(24, 24),
+    new THREE.MeshStandardMaterial({color:0x0d0f14, roughness:1})
+  );
+  floor.rotation.x = -Math.PI/2;
+  floor.position.y = -1.35;
+  scene.add(floor);
+
+  // our own procedural room shell — hidden once the purchased model's own
+  // Room/Window/day-backdrop loads successfully (kept as a fallback until then)
+  var roomCluster = [];
+
+  // back wall
+  var backWall = new THREE.Mesh(
+    new THREE.PlaneGeometry(20, 10),
+    new THREE.MeshStandardMaterial({color:0x12141c, roughness:1})
+  );
+  backWall.position.set(0, 2, -0.6);
+  scene.add(backWall);
+  roomCluster.push(backWall);
+
+  // right wall (cool ambient)
+  var rightWall = new THREE.Mesh(
+    new THREE.PlaneGeometry(14, 10),
+    new THREE.MeshStandardMaterial({color:0x141a24, roughness:1})
+  );
+  rightWall.rotation.y = -Math.PI/2;
+  rightWall.position.set(6.5, 2, 0);
+  scene.add(rightWall);
+  roomCluster.push(rightWall);
+
+  // window backlight (blinds glow source)
+  var windowGlow = new THREE.Mesh(
+    new THREE.PlaneGeometry(4.2, 3.6),
+    new THREE.MeshStandardMaterial({color:0x8fb4d9, emissive:0x8fb4d9, emissiveIntensity:1.0, roughness:1})
+  );
+  windowGlow.position.set(2.6, 2.4, -0.5);
+  scene.add(windowGlow);
+  roomCluster.push(windowGlow);
+
+  // blinds
+  var blindsGroup = new THREE.Group();
+  var blindMat = new THREE.MeshStandardMaterial({color:0x141414, roughness:0.8, metalness:0.1});
+  for (var i=0; i<22; i++){
+    var bar = new THREE.Mesh(new THREE.BoxGeometry(4.2, 0.11, 0.05), blindMat);
+    bar.position.set(2.6, 0.7 + i*0.165, -0.4);
+    blindsGroup.add(bar);
+  }
+  scene.add(blindsGroup);
+  roomCluster.push(blindsGroup);
+
+  // desk-top props that get hidden once the real desk.obj accessories load
+  // (desk itself and the CRT monitor stay — the monitor is the interactive boot screen)
+  var deskCluster = [];
+
+  var deskMat = new THREE.MeshStandardMaterial({color:0x181c24, roughness:0.55});
+  var desk = new THREE.Mesh(new THREE.BoxGeometry(4.8, 0.14, 1.9), deskMat);
+  desk.position.set(0.3, -0.85, 0.4);
+  scene.add(desk);
+
+  // shared procedural "plastic" texture (subtle noise + sheen) for the cream housings
+  var plasticCanvas = document.createElement('canvas');
+  plasticCanvas.width = 64; plasticCanvas.height = 64;
+  var plctx = plasticCanvas.getContext('2d');
+  plctx.fillStyle = '#d8d3c6';
+  plctx.fillRect(0, 0, 64, 64);
+  for (var pn=0; pn<500; pn++){
+    var pnx = Math.random()*64, pny = Math.random()*64;
+    var pshade = Math.random()*16 - 8;
+    plctx.fillStyle = 'rgba(' + Math.round(216+pshade) + ',' + Math.round(211+pshade) + ',' + Math.round(198+pshade) + ',0.5)';
+    plctx.fillRect(pnx, pny, 1, 1);
+  }
+  var plasticSheen = plctx.createLinearGradient(0, 0, 64, 64);
+  plasticSheen.addColorStop(0, 'rgba(255,255,255,0.10)');
+  plasticSheen.addColorStop(0.5, 'rgba(255,255,255,0)');
+  plasticSheen.addColorStop(1, 'rgba(0,0,0,0.06)');
+  plctx.fillStyle = plasticSheen;
+  plctx.fillRect(0, 0, 64, 64);
+  var plasticTex = new THREE.CanvasTexture(plasticCanvas);
+  plasticTex.wrapS = plasticTex.wrapT = THREE.RepeatWrapping;
+  plasticTex.repeat.set(3, 3);
+
+  // speaker grille texture (perforated dot-matrix mesh)
+  var grilleCanvas = document.createElement('canvas');
+  grilleCanvas.width = 64; grilleCanvas.height = 64;
+  var grctx = grilleCanvas.getContext('2d');
+  grctx.fillStyle = '#1c1c1c'; grctx.fillRect(0, 0, 64, 64);
+  grctx.fillStyle = '#050505';
+  for (var ggy=2; ggy<64; ggy+=6){
+    for (var ggx=2; ggx<64; ggx+=6){
+      grctx.beginPath(); grctx.arc(ggx, ggy, 1.4, 0, Math.PI*2); grctx.fill();
+    }
+  }
+  var grilleTex = new THREE.CanvasTexture(grilleCanvas);
+
+  // monitor group (retro all-in-one)
+  var monitor = new THREE.Group();
+  var creamMat = new THREE.MeshStandardMaterial({map:plasticTex, color:0xffffff, roughness:0.55});
+  var body = new THREE.Mesh(new THREE.BoxGeometry(1.55, 1.3, 1.15), creamMat);
+  monitor.add(body);
+  var base = new THREE.Mesh(new THREE.BoxGeometry(1.2, 0.34, 0.95), creamMat);
+  base.position.set(0, -0.82, 0.05);
+  monitor.add(base);
+  var bezel = new THREE.Mesh(
+    new THREE.BoxGeometry(1.28, 1.14, 0.06),
+    creamMat
+  );
+  bezel.position.set(0, -0.01, 0.585);
+  monitor.add(bezel);
+
+  // dark inset frame right around the glass
+  var screenBorder = new THREE.Mesh(
+    new THREE.BoxGeometry(1.18, 0.9, 0.02),
+    new THREE.MeshStandardMaterial({color:0x0a0e10, roughness:0.4})
+  );
+  screenBorder.position.set(0, 0.06, 0.617);
+  monitor.add(screenBorder);
+
+  // control button strip below the screen
+  var ctrlBtnMat = new THREE.MeshStandardMaterial({color:0x2a2a2a, roughness:0.6});
+  var ctrlBtnXs = [-0.42, -0.32, -0.22, -0.1, 0.02, 0.14];
+  for (var cbi=0; cbi<ctrlBtnXs.length; cbi++){
+    var ctrlBtn = new THREE.Mesh(new THREE.BoxGeometry(0.055, 0.035, 0.015), ctrlBtnMat);
+    ctrlBtn.position.set(ctrlBtnXs[cbi], -0.47, 0.619);
+    monitor.add(ctrlBtn);
+  }
+  var powerBtn = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.03, 0.03, 0.016, 16),
+    new THREE.MeshStandardMaterial({color:0x1a1a1a, emissive:0xd9483c, emissiveIntensity:0.5, roughness:0.5})
+  );
+  powerBtn.rotation.x = Math.PI/2;
+  powerBtn.position.set(0.5, -0.47, 0.619);
+  monitor.add(powerBtn);
+
+  // brand plate
+  var brandPlate = new THREE.Mesh(
+    new THREE.BoxGeometry(0.22, 0.03, 0.01),
+    new THREE.MeshStandardMaterial({color:0xb8b2a0, roughness:0.5})
+  );
+  brandPlate.position.set(-0.42, 0.42, 0.619);
+  monitor.add(brandPlate);
+
+  // dynamic screen canvas
+  var sw = 320, sh = 240;
+  var screenCanvas = document.createElement('canvas');
+  screenCanvas.width = sw; screenCanvas.height = sh;
+  var sctx = screenCanvas.getContext('2d');
+  var screenTexture = new THREE.CanvasTexture(screenCanvas);
+  var screenMat = new THREE.MeshBasicMaterial({map:screenTexture});
+  var screenMesh = new THREE.Mesh(new THREE.PlaneGeometry(1.1, 0.82), screenMat);
+  screenMesh.position.set(0, 0.06, 0.62);
+  screenMesh.name = 'SCREEN';
+  monitor.add(screenMesh);
+
+  // mutable refs so the interaction can be rebound to the purchased desk model's
+  // own monitor once it loads — starts out pointing at the CRT as a fallback.
+  var interactiveScreen = screenMesh;
+  var interactiveHitbox = screenMesh;
+
+  monitor.position.set(0.3, 0.05, 0.55);
+  scene.add(monitor);
+
+  // speakers flanking the monitor
+  var speakerMat = new THREE.MeshStandardMaterial({map:plasticTex, color:0xffffff, roughness:0.6});
+  var grilleMat = new THREE.MeshStandardMaterial({map:grilleTex, roughness:0.9});
+  var speakerXs = [-0.65, 1.25];
+  for (var sIdx=0; sIdx<speakerXs.length; sIdx++){
+    var sx = speakerXs[sIdx];
+    var spk = new THREE.Mesh(new THREE.BoxGeometry(0.24, 0.34, 0.24), speakerMat);
+    spk.position.set(sx, -0.61, 0.8);
+    scene.add(spk);
+    deskCluster.push(spk);
+    var grille = new THREE.Mesh(new THREE.CircleGeometry(0.08, 20), grilleMat);
+    grille.position.set(sx, -0.58, 0.921);
+    scene.add(grille);
+    deskCluster.push(grille);
+  }
+
+  // PC tower (right of the monitor)
+  var towerMat = new THREE.MeshStandardMaterial({map:plasticTex, color:0xffffff, roughness:0.6});
+  var tower = new THREE.Mesh(new THREE.BoxGeometry(0.5, 1.05, 0.85), towerMat);
+  tower.position.set(1.9, -0.255, 0.3);
+  scene.add(tower);
+  deskCluster.push(tower);
+
+  var bayMat = new THREE.MeshStandardMaterial({color:0x1c1a1a, roughness:0.7});
+  for (var db=0; db<2; db++){
+    var bay = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.06, 0.02), bayMat);
+    bay.position.set(1.9, 0.15 - db*0.11, 0.727);
+    scene.add(bay);
+    deskCluster.push(bay);
+  }
+  var towerLed = new THREE.Mesh(
+    new THREE.SphereGeometry(0.015, 8, 8),
+    new THREE.MeshStandardMaterial({color:0x3fe08a, emissive:0x3fe08a, emissiveIntensity:1.5})
+  );
+  towerLed.position.set(1.72, -0.15, 0.727);
+  scene.add(towerLed);
+  deskCluster.push(towerLed);
+
+  // keyboard
+  var keyboard = new THREE.Mesh(
+    new THREE.BoxGeometry(1.3, 0.07, 0.42),
+    new THREE.MeshStandardMaterial({map:plasticTex, color:0xffffff, roughness:0.6})
+  );
+  keyboard.position.set(0.3, -0.74, 1.05);
+  scene.add(keyboard);
+  deskCluster.push(keyboard);
+
+  // keycap grid overlay (procedural texture, cheaper than modeling individual keys)
+  var keysCanvas = document.createElement('canvas');
+  keysCanvas.width = 260; keysCanvas.height = 84;
+  var kctx = keysCanvas.getContext('2d');
+  kctx.fillStyle = '#c7c2b4'; kctx.fillRect(0, 0, 260, 84);
+  kctx.fillStyle = '#a39d8c';
+  for (var ky=6; ky<80; ky+=15){
+    for (var kx=6; kx<254; kx+=15){
+      kctx.fillRect(kx, ky, 11, 11);
+    }
+  }
+  var keysTex = new THREE.CanvasTexture(keysCanvas);
+  var keysOverlay = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.26, 0.4),
+    new THREE.MeshStandardMaterial({map:keysTex, roughness:0.7})
+  );
+  keysOverlay.rotation.x = -Math.PI/2;
+  keysOverlay.position.set(0.3, -0.704, 1.05);
+  scene.add(keysOverlay);
+  deskCluster.push(keysOverlay);
+
+  // mouse
+  var mouseBody = new THREE.Mesh(
+    new THREE.SphereGeometry(0.09, 16, 12),
+    new THREE.MeshStandardMaterial({map:plasticTex, color:0xffffff, roughness:0.5})
+  );
+  mouseBody.scale.set(1, 0.55, 1.5);
+  mouseBody.position.set(1.0, -0.7305, 1.0);
+  scene.add(mouseBody);
+  deskCluster.push(mouseBody);
+
+  var mouseSplit = new THREE.Mesh(
+    new THREE.BoxGeometry(0.002, 0.01, 0.16),
+    new THREE.MeshStandardMaterial({color:0x2a2a2a, roughness:0.6})
+  );
+  mouseSplit.position.set(1.0, -0.68, 1.0);
+  scene.add(mouseSplit);
+  deskCluster.push(mouseSplit);
+
+  // mug
+  var mug = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.13, 0.11, 0.22, 16),
+    new THREE.MeshStandardMaterial({color:0x3a3f4a, roughness:0.5})
+  );
+  mug.position.set(-1.05, -0.66, 0.85);
+  scene.add(mug);
+  deskCluster.push(mug);
+
+  // wall shelves (left side)
+  var shelfMat = new THREE.MeshStandardMaterial({color:0xc9a876, roughness:0.7});
+  var topShelf = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.05, 0.3), shelfMat);
+  topShelf.position.set(-3.05, 1.75, -0.5);
+  scene.add(topShelf);
+  roomCluster.push(topShelf);
+  var bottomShelf = new THREE.Mesh(new THREE.BoxGeometry(1.6, 0.05, 0.3), shelfMat);
+  bottomShelf.position.set(-3.05, 1.05, -0.5);
+  scene.add(bottomShelf);
+  roomCluster.push(bottomShelf);
+
+  // book spines standing on the top shelf
+  var spineColors = [0x8a3b2b, 0x2b6b63, 0xc9a227, 0x3a5f8a, 0x6a4a8a];
+  var spineHeights = [0.3, 0.34, 0.28, 0.32, 0.29];
+  for (var s=0; s<5; s++){
+    var sh = spineHeights[s];
+    var spine = new THREE.Mesh(
+      new THREE.BoxGeometry(0.05, sh, 0.24),
+      new THREE.MeshStandardMaterial({color:spineColors[s], roughness:0.7})
+    );
+    spine.position.set(-3.62 + s*0.09, 1.775 + sh/2, -0.5);
+    scene.add(spine);
+    roomCluster.push(spine);
+  }
+
+  // small bin on the top shelf
+  var bin = new THREE.Mesh(
+    new THREE.BoxGeometry(0.26, 0.22, 0.22),
+    new THREE.MeshStandardMaterial({color:0xd8d3c6, roughness:0.8})
+  );
+  bin.position.set(-2.55, 1.885, -0.45);
+  scene.add(bin);
+  roomCluster.push(bin);
+
+  // mini potted plant on the bottom shelf
+  var miniPot = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.06, 0.05, 0.09, 10),
+    new THREE.MeshStandardMaterial({color:0xc9a876, roughness:0.8})
+  );
+  miniPot.position.set(-3.6, 1.12, -0.45);
+  scene.add(miniPot);
+  roomCluster.push(miniPot);
+  for (var ml=0; ml<5; ml++){
+    var mleaf = new THREE.Mesh(
+      new THREE.ConeGeometry(0.025, 0.16, 6),
+      new THREE.MeshStandardMaterial({color:0x4a8a5c, roughness:0.7})
+    );
+    mleaf.position.set(-3.6 + Math.cos(ml)*0.03, 1.19 + Math.random()*0.04, -0.45 + Math.sin(ml)*0.03);
+    mleaf.rotation.z = (Math.random()-0.5)*0.5;
+    scene.add(mleaf);
+    roomCluster.push(mleaf);
+  }
+
+  // a couple books lying flat on the bottom shelf
+  var flatColors = [0x6a4a8a, 0xb08a2c];
+  for (var fb=0; fb<2; fb++){
+    var flatBook = new THREE.Mesh(
+      new THREE.BoxGeometry(0.34, 0.045, 0.22),
+      new THREE.MeshStandardMaterial({color:flatColors[fb], roughness:0.7})
+    );
+    flatBook.position.set(-3.1, 1.075 + 0.0225 + fb*0.045, -0.45);
+    scene.add(flatBook);
+    roomCluster.push(flatBook);
+  }
+
+  // circular pinboard with pinned notes
+  var pinboard = new THREE.Mesh(
+    new THREE.CircleGeometry(0.5, 32),
+    new THREE.MeshStandardMaterial({color:0xc9a876, roughness:0.9})
+  );
+  pinboard.position.set(-1.85, 1.9, -0.53);
+  scene.add(pinboard);
+  roomCluster.push(pinboard);
+
+  var pinColors = [0xe8d97a, 0x9fc3e0, 0xd98a6a];
+  for (var p=0; p<3; p++){
+    var pin = new THREE.Mesh(
+      new THREE.PlaneGeometry(0.16, 0.2),
+      new THREE.MeshStandardMaterial({color:pinColors[p], roughness:0.9})
+    );
+    var ang = p*2.1;
+    pin.position.set(-1.85 + Math.cos(ang)*0.22, 1.9 + Math.sin(ang)*0.18, -0.51);
+    pin.rotation.z = (Math.random()-0.5)*0.3;
+    scene.add(pin);
+    roomCluster.push(pin);
+  }
+
+  // small to-do / calendar board (procedural canvas texture)
+  var boardCanvas = document.createElement('canvas');
+  boardCanvas.width = 200; boardCanvas.height = 150;
+  var bctx = boardCanvas.getContext('2d');
+  bctx.fillStyle = '#1c2430'; bctx.fillRect(0, 0, 200, 150);
+  bctx.strokeStyle = 'rgba(255,255,255,0.22)'; bctx.lineWidth = 1;
+  for (var gx=0; gx<=200; gx+=40){
+    bctx.beginPath(); bctx.moveTo(gx, 22); bctx.lineTo(gx, 150); bctx.stroke();
+  }
+  for (var gy=22; gy<=150; gy+=26){
+    bctx.beginPath(); bctx.moveTo(0, gy); bctx.lineTo(200, gy); bctx.stroke();
+  }
+  bctx.fillStyle = '#e9e6dc'; bctx.font = '14px sans-serif'; bctx.fillText('TO DO', 8, 15);
+  var boardTex = new THREE.CanvasTexture(boardCanvas);
+  var calBoard = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.85, 0.64),
+    new THREE.MeshStandardMaterial({map:boardTex, roughness:1})
+  );
+  calBoard.position.set(-1.9, 1.05, -0.52);
+  scene.add(calBoard);
+  roomCluster.push(calBoard);
+
+  // desk plant (left side, behind the monitor)
+  var deskPlant = new THREE.Group();
+  var deskPot = new THREE.Mesh(
+    new THREE.CylinderGeometry(0.1, 0.08, 0.16, 10),
+    new THREE.MeshStandardMaterial({color:0x3a3a3a, roughness:0.7})
+  );
+  deskPlant.add(deskPot);
+  for (var dl=0; dl<6; dl++){
+    var dleaf = new THREE.Mesh(
+      new THREE.ConeGeometry(0.045, 0.32, 6),
+      new THREE.MeshStandardMaterial({color:0x4a8a5c, roughness:0.7})
+    );
+    dleaf.position.set(Math.cos(dl)*0.05, 0.2 + Math.random()*0.08, Math.sin(dl)*0.05);
+    dleaf.rotation.z = (Math.random()-0.5)*0.6;
+    deskPlant.add(dleaf);
+  }
+  deskPlant.position.set(-0.7, -0.7, -0.35);
+  scene.add(deskPlant);
+  deskCluster.push(deskPlant);
+
+  var deskPlantLight = new THREE.PointLight(0x8fb8c4, 0.4, 2.5, 2);
+  deskPlantLight.position.set(-0.7, -0.2, 0.1);
+  scene.add(deskPlantLight);
+
+  // window light spilling onto the desk (cool glow + blind-stripe shadow)
+  var deskWarmLight = new THREE.PointLight(0x8fb4d9, 0.6, 4, 2);
+  deskWarmLight.position.set(1.9, -0.3, -0.6);
+  scene.add(deskWarmLight);
+
+  var deskGlowCanvas = document.createElement('canvas');
+  deskGlowCanvas.width = 128; deskGlowCanvas.height = 128;
+  var gctx = deskGlowCanvas.getContext('2d');
+  var deskGlowGrad = gctx.createRadialGradient(110, 20, 4, 110, 20, 130);
+  deskGlowGrad.addColorStop(0, 'rgba(143,180,217,0.5)');
+  deskGlowGrad.addColorStop(0.5, 'rgba(143,180,217,0.2)');
+  deskGlowGrad.addColorStop(1, 'rgba(143,180,217,0)');
+  gctx.fillStyle = deskGlowGrad;
+  gctx.fillRect(0, 0, 128, 128);
+  gctx.globalCompositeOperation = 'destination-out';
+  for (var sy=0; sy<128; sy+=11){
+    gctx.fillStyle = 'rgba(0,0,0,0.35)';
+    gctx.fillRect(0, sy, 128, 4);
+  }
+  gctx.globalCompositeOperation = 'source-over';
+  var deskGlowTex = new THREE.CanvasTexture(deskGlowCanvas);
+  var deskGlow = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.9, 1.4),
+    new THREE.MeshBasicMaterial({map:deskGlowTex, transparent:true, blending:THREE.AdditiveBlending, depthWrite:false})
+  );
+  deskGlow.rotation.x = -Math.PI/2;
+  deskGlow.position.set(1.9, -0.775, -0.05);
+  scene.add(deskGlow);
+  deskCluster.push(deskGlow);
+
+  // plant (right side, near window)
+  var plantGroup = new THREE.Group();
+  var pot = new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.14,0.25,10), new THREE.MeshStandardMaterial({color:0x2a2a2a}));
+  plantGroup.add(pot);
+  for (var l=0; l<6; l++){
+    var leaf = new THREE.Mesh(
+      new THREE.ConeGeometry(0.06, 0.5, 6),
+      new THREE.MeshStandardMaterial({color:0x2f5c3a, roughness:0.8})
+    );
+    leaf.position.set(Math.cos(l)*0.08, 0.35 + Math.random()*0.15, Math.sin(l)*0.08);
+    leaf.rotation.z = (Math.random()-0.5)*0.6;
+    plantGroup.add(leaf);
+  }
+  plantGroup.position.set(4.3, -0.6, -1.4);
+  scene.add(plantGroup);
+
+  // Real desk model (assets/desk/) — this REPLACES the procedural desk/monitor/tower/
+  // speakers/keyboard/mouse/mug entirely once it loads. Excluded objects are only the
+  // ones that duplicate our own room shell: its room walls (Room.002_Cube.008), window
+  // (Window), day/night backdrop photos (Day_/Night_), and the window's blind hardware
+  // (CTRL_Hole/Rail/Support_1/Panel_2/String_1/String_2 — identified by their y-range
+  // sitting up near the window opening, not the desk). Everything else — Table_Cube.003,
+  // monitor_Cube.004, Keyboard_Cube.015, mouse_Plane, MousePad_Plane.101,
+  // speakers_Cube.007, headphones_Cylinder.004 + stand, Cup_Cylinder.039, Clock_Cube.016,
+  // Phone_Stand_Cube.006 + iphone, Flower_1/2 — stays and becomes the whole scene.
+  //
+  // Orientation: inspected via debug-desk.html (loads the raw OBJ alone with an
+  // AxesHelper + Box3Helper, logs every object's name/material/bbox to the console).
+  // Table_Cube.003's own bbox is x=0.60 x y=0.72 x z=1.84 — only sane as a real desk
+  // (0.72m floor-to-top, 1.84m wide, 0.6m deep) if the OBJ's axes are depth=X, height=Y,
+  // width=Z, so a -90° yaw is applied to bring width onto our X axis, depth onto our Z.
+  //
+  // Screen surface: inside monitor_Cube.004, material "Material.025" (2126 of its 4234
+  // faces) is the only candidate with screen-like proportions. Grouping that material's
+  // triangles by face normal found two large, nearly-equal-area, nearly-full-panel
+  // surfaces facing local +X (115 faces, area 0.261) and -X (388 faces, area 0.249) —
+  // a front glass + back cover pair. The +X group sits at the less-negative (more
+  // forward) x range, so +X is the outward-facing side. Its own (y,z) extent —
+  // y:[0.5609,0.9539], z:[-0.3418,0.3415] — gives a 0.683 x 0.393 rectangle, aspect
+  // 1.74:1, i.e. essentially 16:9: strong confirmation this is the actual glass, not
+  // bezel. Those exact local coordinates (not a bounding-box percentage guess) are what
+  // SCREEN_LOCAL below encodes; the plane is added as a child of the monitor mesh so it
+  // inherits the model's rotation/scale/position automatically instead of needing its
+  // own world-space math.
+  var floorY = -1.35;
+  // keeping the purchased model's own Room/Window/blind-hardware now — only Night_ is
+  // excluded so its two swappable day/night backdrops don't overlap and z-fight
+  var EXCLUDE_PREFIXES = ['Night_'];
+  // the room shell + backdrop photo are much larger than the furniture (the backdrop
+  // alone is an 8x5x10 unit plane), so they must NOT count toward the auto-fit scale —
+  // otherwise the whole model gets scaled down to fit the backdrop and the furniture
+  // shrinks to a fraction of its size. They still get added to the scene and inherit
+  // the same transform, just excluded from the box used to compute that transform.
+  var FIT_EXCLUDE_PREFIXES = ['Day_', 'Room', 'Window', 'CTRL_Hole', 'Rail', 'Support_1', 'Panel_2', 'String_1', 'String_2'];
+  var SCREEN_LOCAL = { x: -0.088, y: 0.7574, z: 0, width: 0.683, height: 0.393 };
+
+  // loading overlay: covers the procedural CRT scene while the real model streams in over
+  // the network, so the fallback scene never flashes on screen before the swap happens
+  var loadingHidden = false;
+  function hideLoadingOverlay(){
+    if (loadingHidden) return;
+    loadingHidden = true;
+    var el = document.getElementById('loadingOverlay');
+    el.classList.add('hidden');
+    setTimeout(function(){ el.style.display = 'none'; }, 550);
+  }
+  setTimeout(hideLoadingOverlay, 8000); // safety net if the model never resolves
+
+  var deskMtlLoader = new THREE.MTLLoader();
+  deskMtlLoader.setPath('assets/desk/');
+  deskMtlLoader.load('desk.mtl', function(materials){
+    materials.preload();
+    var deskObjLoader = new THREE.OBJLoader();
+    deskObjLoader.setMaterials(materials);
+    deskObjLoader.setPath('assets/desk/');
+    deskObjLoader.load('desk.obj', function(obj){
+      if (booted) return; // don't yank the scene out from under a boot animation already in flight
+
+      var toRemove = [];
+      obj.children.forEach(function(child){
+        var n = child.name || '';
+        for (var pi=0; pi<EXCLUDE_PREFIXES.length; pi++){
+          if (n.indexOf(EXCLUDE_PREFIXES[pi]) === 0){ toRemove.push(child); break; }
+        }
+      });
+      toRemove.forEach(function(c){ obj.remove(c); });
+
+      // CTRL_Hole is an exported Blender boolean-cutter helper (material "hidden_material",
+      // full white, fully opaque) that sits exactly inside the real window opening —
+      // confirmed by raycast: it was hit at distance 5.346 vs Window/Glass at 5.444, i.e.
+      // physically in front of the glass, blocking the view. Blender's per-object "disable
+      // in render" flag has no OBJ equivalent, so it exported as an ordinary visible mesh.
+      // Excluded here by exact name only (not a prefix/substring match) so nothing else
+      // is at risk of being caught by this.
+      var ctrlHole = obj.children.find(function(c){ return c.name === 'CTRL_Hole'; });
+      if (ctrlHole) obj.remove(ctrlHole);
+
+      var monitorChild = obj.children.find(function(c){ return (c.name || '').indexOf('monitor_') === 0; });
+
+      // new interactive screen, parented to the monitor mesh so it inherits the
+      // model's own transform chain exactly — no separate world-space math needed.
+      if (monitorChild){
+        var newScreenMesh = new THREE.Mesh(new THREE.PlaneGeometry(SCREEN_LOCAL.width, SCREEN_LOCAL.height), screenMat);
+        newScreenMesh.position.set(SCREEN_LOCAL.x, SCREEN_LOCAL.y, SCREEN_LOCAL.z);
+        newScreenMesh.rotation.y = Math.PI/2;
+        newScreenMesh.name = 'SCREEN_REAL';
+        monitorChild.add(newScreenMesh);
+
+        var newHitbox = new THREE.Mesh(
+          new THREE.PlaneGeometry(SCREEN_LOCAL.width*1.2, SCREEN_LOCAL.height*1.2),
+          new THREE.MeshBasicMaterial({visible:false})
+        );
+        newHitbox.position.copy(newScreenMesh.position);
+        newHitbox.rotation.y = Math.PI/2;
+        monitorChild.add(newHitbox);
+
+        interactiveScreen = newScreenMesh;
+        interactiveHitbox = newHitbox;
+      } else {
+        console.warn('desk.obj: no monitor_ child found — keeping the CRT as the interactive screen');
+      }
+
+      obj.rotation.y = -Math.PI/2;
+      obj.updateMatrixWorld(true);
+
+      function furnitureBox(){
+        var b = new THREE.Box3();
+        var any = false;
+        obj.children.forEach(function(child){
+          var n = child.name || '';
+          for (var pi=0; pi<FIT_EXCLUDE_PREFIXES.length; pi++){
+            if (n.indexOf(FIT_EXCLUDE_PREFIXES[pi]) === 0) return;
+          }
+          b.union(new THREE.Box3().setFromObject(child));
+          any = true;
+        });
+        return any ? b : new THREE.Box3().setFromObject(obj);
+      }
+
+      var box = furnitureBox();
+      var size = new THREE.Vector3();
+      box.getSize(size);
+      var targetWidth = 4.2;
+      var scale = size.x > 0 ? targetWidth / size.x : 1;
+      obj.scale.setScalar(scale);
+      obj.updateMatrixWorld(true);
+
+      var box2 = furnitureBox();
+      var center2 = new THREE.Vector3();
+      box2.getCenter(center2);
+      obj.position.x += (0.3 - center2.x);
+      obj.position.y += (floorY - box2.min.y);
+      obj.position.z += (0.4 - center2.z);
+
+      scene.add(obj);
+      obj.updateMatrixWorld(true);
+
+      if (monitorChild){
+        var screenWorldPos = new THREE.Vector3();
+        interactiveScreen.getWorldPosition(screenWorldPos);
+        // PlaneGeometry's inherent (un-rotated) normal is local +Z — feed that in and let
+        // matrixWorld (mesh's own rotation.y=+90° combined with the model's -90°) do the
+        // rotation math, rather than trying to pre-guess the post-rotation direction.
+        var screenWorldNormal = new THREE.Vector3(0, 0, 1);
+        screenWorldNormal.transformDirection(interactiveScreen.matrixWorld).normalize();
+        zoomToLook.copy(screenWorldPos);
+        zoomToPos.copy(screenWorldPos).addScaledVector(screenWorldNormal, 1.4);
+        console.log('screen world position:', screenWorldPos, 'outward normal:', screenWorldNormal);
+      }
+
+      // the purchased "Glass" material has no transparency defined in the source MTL at
+      // all (d=1.0, no alpha map) — it's a real gap in the exported asset, not something
+      // we filtered wrong, confirmed by reading the material back after load: transparent
+      // was false and opacity was 1. Fix it here so the window is actually see-through.
+      obj.traverse(function(o){
+        if (!o.material) return;
+        var mats = Array.isArray(o.material) ? o.material : [o.material];
+        mats.forEach(function(m){
+          if (m.name === 'Glass'){
+            m.transparent = true;
+            m.opacity = 0.18;
+            m.depthWrite = false;
+          }
+        });
+      });
+
+      // Room.002_Cube.008's "missing wall" was proven to be backface culling, not missing
+      // geometry: setting its materials to DoubleSide (no geometry/transform change) made
+      // the wall reappear. Direct inspection of all 49 of its faces in the raw OBJ confirms
+      // why — every single face normal points outward from the room interior (e.g. the
+      // x=-0.321 wall has normal (-1,0,0), while the camera/furniture sit around x=+0.3+),
+      // a uniform, whole-mesh issue consistent with a box modeled for exterior-facing
+      // render with backface culling off in the original app, not a per-spot defect. The
+      // window opening itself is a real cut hole (header/sill/jamb reveal faces present,
+      // no face spans the actual opening), so this doesn't paper over a legitimately open
+      // gap — it's the correct fix for the whole shell, no patch geometry involved.
+      var roomMesh = obj.children.find(function(c){ return c.name === 'Room.002_Cube.008'; });
+      if (roomMesh){
+        var roomMats = Array.isArray(roomMesh.material) ? roomMesh.material : [roomMesh.material];
+        roomMats.forEach(function(m){ m.side = THREE.DoubleSide; });
+      }
+
+      // the purchased model is now the whole scene — remove every procedural desk prop
+      // and our own room shell (its own Room/Window/day-backdrop replace them)
+      scene.remove(desk);
+      scene.remove(monitor);
+      deskCluster.forEach(function(m){ scene.remove(m); });
+      roomCluster.forEach(function(m){ scene.remove(m); });
+
+      console.log('desk model loaded and swapped in: scale=' + scale.toFixed(3) + ' size=', size);
+      hideLoadingOverlay();
+    }, undefined, function(err){
+      console.error('desk.obj failed to load — keeping the procedural scene', err);
+      hideLoadingOverlay();
+    });
+  }, undefined, function(err){
+    console.error('desk.mtl failed to load — keeping the procedural scene', err);
+    hideLoadingOverlay();
+  });
+
+  // ---- screen drawing ----
+  var booted = false;
+  var bootLines = [
+    '> initializing session...',
+    '> loading AI Agent Applications',
+    '> loading Data',
+    '> loading Product',
+    '> welcome.'
+  ];
+  var typedText = [];
+  var lineIndex = 0, charIndex = 0;
+
+  var idlePhrase = 'CLICK TO KNOW MORE ABOUT ME';
+  var idleCharMs = 95;
+  var idleTypeMs = idlePhrase.length * idleCharMs;
+  var idleHoldMs = 1100;
+  var idleEraseMs = idlePhrase.length * 45;
+  var idlePauseMs = 900;
+  var idleCycleMs = idleTypeMs + idleHoldMs + idleEraseMs + idlePauseMs;
+
+  function drawIdleScreen(t){
+    sctx.fillStyle = '#04181a';
+    sctx.fillRect(0,0,sw,sh);
+    for (var y=0; y<sh; y+=3){
+      sctx.fillStyle = 'rgba(0,0,0,0.12)';
+      sctx.fillRect(0,y,sw,1);
+    }
+
+    var ms = (t*1000) % idleCycleMs;
+    var shown;
+    if (ms < idleTypeMs){
+      shown = idlePhrase.substring(0, Math.floor(ms / idleCharMs));
+    } else if (ms < idleTypeMs + idleHoldMs){
+      shown = idlePhrase;
+    } else if (ms < idleTypeMs + idleHoldMs + idleEraseMs){
+      var eraseProgress = (ms - idleTypeMs - idleHoldMs) / idleEraseMs;
+      shown = idlePhrase.substring(0, Math.round(idlePhrase.length * (1 - eraseProgress)));
+    } else {
+      shown = '';
+    }
+
+    sctx.font = '14px monospace';
+    sctx.fillStyle = '#8ff0dd';
+    var textWidth = sctx.measureText(shown).width;
+    var textX = sw/2 - textWidth/2;
+    sctx.fillText(shown, textX, sh/2 + 5);
+
+    var blink = Math.sin(t*4) > 0;
+    if (blink){
+      sctx.fillStyle = '#cfeee8';
+      sctx.fillRect(textX + textWidth + 3, sh/2 - 9, 7, 14);
+    }
+    screenTexture.needsUpdate = true;
+  }
+
+  function drawBootScreen(){
+    sctx.fillStyle = '#04181a';
+    sctx.fillRect(0,0,sw,sh);
+    for (var y=0; y<sh; y+=3){
+      sctx.fillStyle = 'rgba(0,0,0,0.12)';
+      sctx.fillRect(0,y,sw,1);
+    }
+    sctx.font = '13px monospace';
+    sctx.fillStyle = '#8ff0dd';
+    var startY = 40;
+    for (var i=0; i<typedText.length; i++){
+      sctx.fillText(typedText[i], 18, startY + i*22);
+    }
+    screenTexture.needsUpdate = true;
+  }
+
+  function typeStep(){
+    if (lineIndex >= bootLines.length) return;
+    var line = bootLines[lineIndex];
+    if (charIndex === 0) typedText.push('');
+    charIndex++;
+    typedText[lineIndex] = line.substring(0, charIndex);
+    drawBootScreen();
+    if (charIndex >= line.length){
+      lineIndex++; charIndex = 0;
+      setTimeout(typeStep, 220);
+    } else {
+      setTimeout(typeStep, 28);
+    }
+  }
+
+  var zooming = false;
+  var zoomStart = 0;
+  var zoomDuration = 1.5;
+  var zoomFromPos = new THREE.Vector3();
+  var zoomFromFov = camera.fov;
+  var zoomFromLook = new THREE.Vector3(0.27, 0.95, 0.2);
+  var zoomToPos = new THREE.Vector3(0.3, 0.11, 2.55);
+  var zoomToLook = new THREE.Vector3(0.3, 0.11, 1.165);
+  var zoomToFov = 29;
+  var currentLook = new THREE.Vector3(0.3, 0, 0);
+
+  function easeInOutCubic(x){
+    return x < 0.5 ? 4*x*x*x : 1 - Math.pow(-2*x+2, 3)/2;
+  }
+
+  function boot(){
+    if (booted) return;
+    booted = true;
+    document.getElementById('hint').classList.add('hidden');
+    document.getElementById('sysState').textContent = 'ACTIVE';
+    powerBtn.material.emissive.setHex(0x5fd6c2);
+    powerBtn.material.emissiveIntensity = 0.8;
+    typeStep();
+    zoomFromPos.copy(camera.position);
+    zoomFromFov = camera.fov;
+    zooming = true;
+    zoomStart = clock.getElapsedTime();
+    setTimeout(function(){
+      document.getElementById('app').classList.add('fade-out');
+      document.getElementById('enterLink').classList.add('show');
+      setTimeout(function(){
+        window.location.href = 'desktop.html';
+      }, 650);
+    }, zoomDuration*1000 + 250);
+  }
+
+  // hint typewriter ("click to know me")
+  var hintPhrase = 'click screen to interact';
+  var hintTextEl = document.getElementById('hintText');
+  var hi = 0;
+  function typeHint(){
+    if (booted) return;
+    if (hi <= hintPhrase.length){
+      hintTextEl.textContent = hintPhrase.substring(0, hi);
+      hi++;
+      setTimeout(typeHint, 65);
+    }
+  }
+  typeHint();
+
+  // raycasting click
+  var raycaster = new THREE.Raycaster();
+  var mouseVec = new THREE.Vector2();
+  renderer.domElement.style.pointerEvents = 'auto';
+  renderer.domElement.addEventListener('click', function(e){
+    mouseVec.x = (e.clientX / window.innerWidth) * 2 - 1;
+    mouseVec.y = -(e.clientY / window.innerHeight) * 2 + 1;
+    raycaster.setFromCamera(mouseVec, camera);
+    var hits = raycaster.intersectObject(interactiveHitbox, false);
+    if (hits.length > 0){
+      boot();
+    }
+  });
+
+  // mouse parallax
+  var mouseX = 0, mouseY = 0;
+  window.addEventListener('mousemove', function(e){
+    mouseX = (e.clientX / window.innerWidth) - 0.5;
+    mouseY = (e.clientY / window.innerHeight) - 0.5;
+  });
+
+  // clock
+  function updateClock(){
+    var d = new Date();
+    var hh = String(d.getHours()).padStart(2,'0');
+    var mm = String(d.getMinutes()).padStart(2,'0');
+    var ss = String(d.getSeconds()).padStart(2,'0');
+    document.getElementById('clock').textContent = hh+':'+mm+':'+ss;
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // resize
+  window.addEventListener('resize', function(){
+    var w = window.innerWidth, h = window.innerHeight;
+    camera.aspect = w/h;
+    camera.updateProjectionMatrix();
+    renderer.setSize(w,h);
+  });
+
+  var clock = new THREE.Clock();
+  function animate(){
+    requestAnimationFrame(animate);
+    var t = clock.getElapsedTime();
+
+    if (zooming){
+      var zt = Math.min((t - zoomStart) / zoomDuration, 1);
+      var ez = easeInOutCubic(zt);
+      camera.position.lerpVectors(zoomFromPos, zoomToPos, ez);
+      currentLook.lerpVectors(zoomFromLook, zoomToLook, ez);
+      camera.lookAt(currentLook);
+      camera.fov = zoomFromFov + (zoomToFov - zoomFromFov) * ez;
+      camera.updateProjectionMatrix();
+    } else {
+      camera.position.x += (mouseX*0.5 - camera.position.x) * 0.03;
+      camera.position.y += (0.75 - mouseY*0.25 - camera.position.y) * 0.03;
+      camera.lookAt(0.27, 0.95, 0.2);
+    }
+
+    warmLight.intensity = 1.5 + Math.sin(t*0.6)*0.08;
+
+    if (!booted){
+      drawIdleScreen(t);
+      screenLight.intensity = 0.12 + Math.sin(t*4)*0.03;
+    } else {
+      screenLight.intensity += (1.4 - screenLight.intensity) * 0.05;
+    }
+
+    renderer.render(scene, camera);
+  }
+  animate();
+})();
+</script>
+</body>
+</html>

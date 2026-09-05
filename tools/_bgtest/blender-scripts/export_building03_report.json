@@ -1,0 +1,43 @@
+{
+  "output": "C:\\Users\\kiana\\Desktop\\portfolio\\tools\\_bgtest\\generated\\building03-optimized.glb",
+  "file_size_bytes": 77892,
+  "decimate_ratio_used": 0.22,
+  "raw_triangle_count": 36066,
+  "pre_decimate_triangle_count": 36066,
+  "post_decimate_triangle_count": 7930,
+  "final_triangle_count": 7930,
+  "final_vertex_count": 4470,
+  "material_count": 2,
+  "materials": [
+    "facade",
+    "glass"
+  ],
+  "local_bbox": {
+    "min": [
+      -26.356891632080078,
+      -43.29247283935547,
+      3.814697265625e-06
+    ],
+    "max": [
+      13.710760116577148,
+      121.60433959960938,
+      91.00001525878906
+    ]
+  },
+  "in_target_tri_range_5k_10k": true,
+  "under_12k_hard_cap": true,
+  "under_250kb": true,
+  "draco_compressed": true,
+  "facade_color": [
+    0.1316,
+    0.1598,
+    0.1974,
+    1.0
+  ],
+  "glass_color": [
+    0.11844,
+    0.14382,
+    0.19266,
+    1.0
+  ]
+}

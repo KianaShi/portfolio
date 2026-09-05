@@ -1,0 +1,66 @@
+{
+  "source": "C:\\Users\\kiana\\Desktop\\portfolio\\3d\\bg\\SkyscraperPack01_REV_2_DAY.blend",
+  "target": "001_Residential_04",
+  "type": "MESH",
+  "location": [
+    -48.01298522949219,
+    -317.2499084472656,
+    12.096343994140625
+  ],
+  "rotation_euler": [
+    0.0,
+    -0.0,
+    2.7488934993743896
+  ],
+  "scale": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "parent": null,
+  "children": [],
+  "vertex_count": 11213,
+  "polygon_count": 6948,
+  "triangle_count_estimate": 14327,
+  "material_slots": [
+    "000_Whitespo",
+    "Metal01",
+    "GlassLuceCyan",
+    "000.Glass",
+    "GlassMall01",
+    "GlassSkys03",
+    "GlassLuceCyan"
+  ],
+  "triangles_per_material": {
+    "000_Whitespo": 9889,
+    "GlassMall01": 530,
+    "GlassSkys03": 80,
+    "Metal01": 3526,
+    "GlassLuceCyan": 26,
+    "000.Glass": 276
+  },
+  "has_uv": true,
+  "images_used": [
+    "TexturesCom_Paint_MachinePaint_1K_roughness.tif",
+    "GlassSkys02_R.jpg",
+    "GlassesMall_01_R.jpg",
+    "TexturesCom_Paint_MachinePaint_1K_normal.tif",
+    "TexturesCom_Paint_MachinePaint_White_1K_White.tif",
+    "GlassSkys02_N.jpg",
+    "GlassSkys02.jpg.001",
+    "GlassSkys02.jpg",
+    "GlassesMall_01_N.jpg"
+  ],
+  "local_bbox": {
+    "min": [
+      -57.87604522705078,
+      -1.5649356842041016,
+      -12.096343040466309
+    ],
+    "max": [
+      39.1884651184082,
+      85.32195281982422,
+      322.2055358886719
+    ]
+  }
+}

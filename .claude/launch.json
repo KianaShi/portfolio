@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "portfolio-static",
+      "runtimeExecutable": "python",
+      "runtimeArgs": ["-m", "http.server", "8731"],
+      "port": 8731
+    },
+    {
+      "name": "portfolio-serve",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["serve", "-l", "8732", "."],
+      "port": 8732
+    }
+  ]
+}

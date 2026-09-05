@@ -1,0 +1,13 @@
+{
+  "output": "C:\\Users\\kiana\\Desktop\\portfolio\\tools\\_bgtest\\generated\\skyscraper07-silhouette.glb",
+  "file_size_bytes": 30912,
+  "decimate_ratio_used": 0.045,
+  "pre_tris_after_interior_removal": 44752,
+  "post_planar_dissolve_tris": 42599,
+  "post_collapse_tris": 1916,
+  "final_triangle_count": 1914,
+  "final_vertex_count": 1040,
+  "material_count": 1,
+  "in_target_tri_range_1k_4k": true,
+  "under_150kb": true
+}

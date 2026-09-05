@@ -1,0 +1,72 @@
+{
+  "source": "C:\\Users\\kiana\\Desktop\\portfolio\\3d\\bg\\SkyscraperPack01_REV_2_DAY.blend",
+  "target": "01_Building03",
+  "type": "MESH",
+  "location": [
+    -112.32638549804688,
+    249.86026000976562,
+    8.5
+  ],
+  "rotation_euler": [
+    0.0,
+    0.0,
+    9.424778938293457
+  ],
+  "scale": [
+    -37.03703689575195,
+    20.0,
+    10.0
+  ],
+  "parent": null,
+  "children": [],
+  "modifiers": [],
+  "hide_viewport": false,
+  "hide_render": false,
+  "vertex_count": 18686,
+  "polygon_count": 18014,
+  "triangle_count_estimate": 36066,
+  "material_slots": [
+    "Metal0100",
+    "Easy GlassC",
+    "Easy Glass",
+    "Metal02",
+    "Wall01"
+  ],
+  "triangles_per_material": {
+    "Wall01": 540,
+    "Metal0100": 27074,
+    "Easy GlassC": 2700,
+    "Metal02": 5064,
+    "Easy Glass": 688
+  },
+  "has_uv": true,
+  "images_used": [
+    "Wall01.tif",
+    "Wall01R.tif",
+    "Wall01N.tif"
+  ],
+  "local_bbox": {
+    "min": [
+      -0.37019050121307373,
+      -2.164623498916626,
+      -0.8499996662139893
+    ],
+    "max": [
+      0.7116360068321228,
+      6.080216884613037,
+      8.25
+    ]
+  },
+  "world_bbox": {
+    "min": [
+      -126.03717803955078,
+      128.25592041015625,
+      3.814697265625e-06
+    ],
+    "max": [
+      -85.96937561035156,
+      293.1527404785156,
+      91.0
+    ]
+  }
+}

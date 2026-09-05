@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BG TEST — Seattle window backdrop (not part of the site)</title>
+<link rel="stylesheet" href="styles/intro.css">
+</head>
+<body>
+<div id="loadingOverlay">loading scene<span class="dot" aria-hidden="true"></span></div>
+<div id="app">
+  <div class="vignette"></div>
+  <div class="ui-layer">
+    <div class="status-tl">BG TEST // <span id="sysState">IDLE</span> — <span id="clock">00:00:00</span> — D/N = pure day/night, drag slider to blend</div>
+    <div class="hint" id="hint"><span id="hintText"></span><span class="cursor" aria-hidden="true">_</span></div>
+  </div>
+</div>
+<div id="bgtestHud" style="position:fixed;top:10px;left:10px;z-index:1000;
+  background:rgba(0,0,0,0.72);color:#dff;font:12px/1.5 monospace;
+  padding:8px 10px;border-radius:4px;pointer-events:none;white-space:nowrap;"></div>
+<div id="buildingtestHud" style="position:fixed;top:10px;right:10px;z-index:1000;
+  background:rgba(0,0,0,0.72);color:#ffe0b3;font:12px/1.5 monospace;
+  padding:8px 10px;border-radius:4px;pointer-events:none;white-space:nowrap;text-align:right;"></div>
+<div id="residential04Hud" style="position:fixed;top:90px;right:10px;z-index:1000;
+  background:rgba(0,0,0,0.72);color:#b3ffe0;font:12px/1.5 monospace;
+  padding:8px 10px;border-radius:4px;pointer-events:none;white-space:nowrap;text-align:right;"></div>
+<div id="building03Hud" style="position:fixed;top:160px;right:10px;z-index:1000;
+  background:rgba(0,0,0,0.72);color:#c9b3ff;font:12px/1.5 monospace;
+  padding:8px 10px;border-radius:4px;pointer-events:none;white-space:nowrap;text-align:right;"></div>
+<div style="position:fixed;bottom:10px;left:10px;z-index:1000;
+  background:rgba(0,0,0,0.72);color:#dff;font:12px monospace;
+  padding:8px 10px;border-radius:4px;display:flex;align-items:center;gap:8px;">
+  <span>Day</span>
+  <input id="bgtestBlend" type="range" min="0" max="100" value="0" style="width:240px;">
+  <span>Night</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/DRACOLoader.js"></script>
+<script src="src/intro.js"></script>
+<script src="src/scene/create-scene.js"></script>
+<script src="src/screen/screen-canvas.js"></script>
+<script src="src/scene/procedural-scene.js"></script>
+<script src="src/scene/load-models.js"></script>
+<script src="src/screen/boot-animation.js"></script>
+<script src="tools/_bgtest/interaction-test.js"></script>
+<script src="tools/_bgtest/swap-bg.js"></script>
+<script src="tools/_bgtest/building-test.js"></script>
+<script src="tools/_bgtest/blur-test.js"></script>
+<script src="tools/_bgtest/residential04-test.js"></script>
+<script src="tools/_bgtest/building03-test.js"></script>
+</body>
+</html>

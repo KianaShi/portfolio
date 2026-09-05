@@ -1,0 +1,135 @@
+{
+  "source": "C:\\Users\\kiana\\Desktop\\portfolio\\3d\\bg\\SkyscraperPack01_REV_2_DAY.blend",
+  "target": "01_Skyscraper07",
+  "object_type": "MESH",
+  "parent": null,
+  "parent_type": null,
+  "local_location": [
+    209.20184326171875,
+    159.70068359375,
+    12.0
+  ],
+  "local_rotation_euler": [
+    0.0,
+    -0.0,
+    1.5707963705062866
+  ],
+  "local_scale": [
+    1.0,
+    1.0,
+    1.0
+  ],
+  "matrix_world": [
+    [
+      -4.371138828673793e-08,
+      -1.0,
+      0.0,
+      209.20184326171875
+    ],
+    [
+      1.0,
+      -4.371138828673793e-08,
+      0.0,
+      159.70068359375
+    ],
+    [
+      0.0,
+      0.0,
+      1.0,
+      12.0
+    ],
+    [
+      0.0,
+      0.0,
+      0.0,
+      1.0
+    ]
+  ],
+  "parent_chain": [],
+  "direct_children": [],
+  "hide_viewport": false,
+  "hide_render": false,
+  "modifiers": [],
+  "mesh_data_name": "Plane.003",
+  "mesh_users": 1,
+  "vertex_count": 22691,
+  "polygon_count": 22392,
+  "triangle_count_estimate": 44834,
+  "material_slots": [
+    {
+      "slot_link": "DATA",
+      "material_name": "Metal01",
+      "use_nodes": true
+    },
+    {
+      "slot_link": "DATA",
+      "material_name": "Easy Glass",
+      "use_nodes": true
+    },
+    {
+      "slot_link": "DATA",
+      "material_name": "Easy GlassC",
+      "use_nodes": true
+    }
+  ],
+  "faces_per_material_index": {
+    "0": 20362,
+    "2": 1708,
+    "1": 322
+  },
+  "material_details": {
+    "Metal01": {
+      "use_nodes": true,
+      "nodes": [
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output"
+        },
+        {
+          "type": "BSDF_PRINCIPLED",
+          "name": "Principled BSDF",
+          "base_color": [
+            0.31853967905044556,
+            0.31853967905044556,
+            0.31853967905044556,
+            1.0
+          ],
+          "roughness": 0.5,
+          "metallic": 1.0
+        }
+      ]
+    },
+    "Easy Glass": {
+      "use_nodes": true,
+      "nodes": [
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output"
+        },
+        {
+          "type": "BSDF_GLASS",
+          "name": "Glass BSDF"
+        }
+      ]
+    },
+    "Easy GlassC": {
+      "use_nodes": true,
+      "nodes": [
+        {
+          "type": "OUTPUT_MATERIAL",
+          "name": "Material Output"
+        },
+        {
+          "type": "BSDF_GLASS",
+          "name": "Glass BSDF"
+        }
+      ]
+    }
+  },
+  "objects_sharing_this_mesh_data": [
+    "01_Skyscraper07"
+  ],
+  "all_descendants": [],
+  "scene_unit_scale": 1.0,
+  "scene_unit_system": "NONE"
+}

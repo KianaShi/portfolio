@@ -1,0 +1,29 @@
+{
+  "output": "C:\\Users\\kiana\\Desktop\\portfolio\\tools\\_bgtest\\generated\\residential04-optimized.glb",
+  "file_size_bytes": 82884,
+  "decimate_ratio_used": 0.75,
+  "pre_decimate_triangle_count": 14191,
+  "post_decimate_triangle_count": 10643,
+  "final_triangle_count": 10643,
+  "final_vertex_count": 8676,
+  "material_count": 2,
+  "materials": [
+    "facade",
+    "glass"
+  ],
+  "in_target_tri_range_8k_15k": true,
+  "under_500kb": true,
+  "draco_compressed": true,
+  "facade_color": [
+    0.15120000000000003,
+    0.1836,
+    0.2268,
+    1.0
+  ],
+  "glass_color": [
+    0.13608000000000003,
+    0.16524000000000003,
+    0.21911999999999998,
+    1.0
+  ]
+}

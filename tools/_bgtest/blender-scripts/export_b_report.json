@@ -1,0 +1,18 @@
+{
+  "output": "C:\\Users\\kiana\\Desktop\\portfolio\\tools\\_bgtest\\generated\\skyscraper07-optimized.glb",
+  "file_size_bytes": 104760,
+  "decimate_ratio_used": 0.24,
+  "pre_decimate_triangle_count": 44752,
+  "post_decimate_triangle_count": 10740,
+  "final_triangle_count": 10740,
+  "final_vertex_count": 5639,
+  "material_count": 2,
+  "materials": [
+    "facade",
+    "glass"
+  ],
+  "in_target_tri_range_8k_15k": true,
+  "under_1mb": true,
+  "under_500kb": true,
+  "draco_compressed": true
+}

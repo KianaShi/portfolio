@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kiana Shi — Desktop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles/desktop.css">
+</head>
+<body>
+
+  <div class="icons">
+    <div class="icon" data-win="win-work">
+      <div class="glyph"><svg viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg></div>
+      <span class="label">Selected Work</span>
+    </div>
+    <div class="icon" data-win="win-about">
+      <div class="glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.2-4 4-6 7-6s5.8 2 7 6"/></svg></div>
+      <span class="label">About Me</span>
+    </div>
+    <div class="icon" data-win="win-skills">
+      <div class="glyph"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4Z"/></svg></div>
+      <span class="label">Skills</span>
+    </div>
+    <div class="icon" data-win="win-experience">
+      <div class="glyph"><svg viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg></div>
+      <span class="label">Experience</span>
+    </div>
+    <div class="icon" data-win="win-now">
+      <div class="glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+      <span class="label">Now (2026)</span>
+    </div>
+    <div class="icon" data-win="win-playlist">
+      <div class="glyph"><svg viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg></div>
+      <span class="label">Playlist</span>
+    </div>
+    <div class="icon" data-win="win-contact">
+      <div class="glyph"><svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></div>
+      <span class="label">Contact</span>
+    </div>
+    <div class="icon" data-win="win-resume">
+      <div class="glyph"><svg viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7Z"/><path d="M14 3v4h4"/><path d="M9.5 12h5M9.5 15h5M9.5 9h2"/></svg></div>
+      <span class="label">Résumé.pdf</span>
+    </div>
+    <div class="icon" data-win="win-facts">
+      <div class="glyph"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 17v.01M12 8a2.5 2.5 0 0 1 2.5 2.5c0 1.7-2.5 1.9-2.5 4"/></svg></div>
+      <span class="label">Fun Facts</span>
+    </div>
+    <div class="icon" data-win="win-guestbook">
+      <div class="glyph"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg></div>
+      <span class="label">Guestbook</span>
+    </div>
+    <div class="icon trash" data-win="win-trash">
+      <div class="glyph"><svg viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg></div>
+      <span class="label">Recycle Bin</span>
+    </div>
+  </div>
+
+  <!-- notification popups -->
+  <div class="popup" id="notePopup">
+    <div class="ptitle"><span>✦ Did you know?</span><button data-close="notePopup">×</button></div>
+    <div class="pbody">RAG stands for retrieval-augmented generation — it's basically an AI doing an open-book exam instead of relying on memory alone.</div>
+  </div>
+  <div class="popup" id="updatePopup">
+    <div class="ptitle"><span>✦ KianaOS Update</span><button data-close="updatePopup">×</button></div>
+    <div class="pbody">
+      A newer build of this portfolio is available.<br><b>KianaOS → Intro Edition.</b>
+      <br><button class="action" id="backToIntro">Reboot to intro ↺</button>
+    </div>
+  </div>
+
+  <!-- windows -->
+  <div class="win" id="win-work" style="top:70px;left:140px;">
+    <div class="titlebar">
+      <svg class="twin-icon" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>
+      <span>Selected Work</span>
+      <button data-close="win-work">×</button>
+    </div>
+    <div class="content">
+      <div class="proj">
+        <h4>Software Version Migration Assistant (RAG) <a class="link" href="https://github.com/KianaShi/AI-Software_Version_Migration_Assistant" style="font-size:11px;" target="_blank" rel="noopener noreferrer">GitHub ↗</a></h4>
+        <p>Version-aware RAG system for Pydantic 1.x→2.x migration — hybrid retrieval (dense + BM25 + RRF) with version filtering, reaching 0.958 Recall@5 on change retrieval and 0.948 on supporting evidence.</p>
+      </div>
+      <div class="proj">
+        <h4>Fraud Risk Modeling & Third-Party Signal Valuation <a class="link" href="https://github.com/KianaShi/fraud-risk-analysis" style="font-size:11px;" target="_blank" rel="noopener noreferrer">GitHub ↗</a></h4>
+        <p>Leakage-safe fraud modeling framework with TreeSHAP + temporal holdout evaluation; TabICLv2 hit 0.951 ROC-AUC, used to quantify the marginal value of third-party fraud signals.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="win-about" style="top:110px;left:200px;">
+    <div class="titlebar">
+      <svg class="twin-icon" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.2"/><path d="M5 20c1.2-4 4-6 7-6s5.8 2 7 6"/></svg>
+      <span>About Me</span>
+      <button data-close="win-about">×</button>
+    </div>
+    <div class="content">
+      <h3>Kiana Shi</h3>
+      <p>M.S. student in Data Analytics Engineering at Northeastern University (Seattle), building on a B.S. in Computer Science & Environmental and Sustainability Sciences from Northeastern (Boston). I've spent my internships engineering LLM-based agents and RAG systems — from multi-agent orchestration layers to retrieval pipelines — and I like turning research-grade AI into things people can actually use.</p>
+    </div>
+  </div>
+
+  <div class="win" id="win-skills" style="top:150px;left:260px;">
+    <div class="titlebar">
+      <svg class="twin-icon" viewBox="0 0 24 24"><path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4Z"/></svg>
+      <span>Skills</span>
+      <button data-close="win-skills">×</button>
+    </div>
+    <div class="content">
+      <p class="muted" style="margin-bottom:4px;">Programming</p>
+      <span class="tag">Python</span><span class="tag">SQL</span><span class="tag">Java</span><span class="tag">R</span>
+      <p class="muted" style="margin:10px 0 4px;">AI & LLM Systems</p>
+      <span class="tag">RAG</span><span class="tag">Multi-Agent Systems</span><span class="tag">AgentScope</span>
+      <span class="tag">OpenAI API</span><span class="tag">Function Calling</span>
+      <p class="muted" style="margin:10px 0 4px;">Machine Learning</p>
+      <span class="tag">XGBoost</span><span class="tag">CatBoost</span><span class="tag">Scikit-learn</span>
+      <span class="tag">TensorFlow/Keras</span><span class="tag">ResNet50</span><span class="tag">Optuna</span><span class="tag">SHAP</span>
+      <p class="muted" style="margin:10px 0 4px;">Retrieval & Data</p>
+      <span class="tag">BM25</span><span class="tag">RRF</span><span class="tag">Pandas</span><span class="tag">NumPy</span>
+      <span class="tag">PostgreSQL</span><span class="tag">MySQL</span><span class="tag">Milvus</span><span class="tag">Redis</span><span class="tag">ChromaDB</span>
+      <p class="muted" style="margin:10px 0 4px;">Engineering & Visualization</p>
+      <span class="tag">Git</span><span class="tag">pytest</span><span class="tag">Streamlit</span><span class="tag">Tableau</span>
+      <span class="tag">Plotly</span><span class="tag">Matplotlib</span>
+    </div>
+  </div>
+
+  <div class="win" id="win-now" style="top:190px;left:320px;">
+    <div class="titlebar">
+      <svg class="twin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <span>Now (2026)</span>
+      <button data-close="win-now">×</button>
+    </div>
+    <div class="content">
+      <p>Currently an AI Engineer Intern at Wuhan Survey & Design Institute (remote), building a Plan-and-Execute multi-agent orchestration layer — while working through my M.S. in Data Analytics Engineering at Northeastern.</p>
+    </div>
+  </div>
+
+  <div class="win" id="win-experience" style="top:100px;left:460px;">
+    <div class="titlebar">
+      <svg class="twin-icon" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="13" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+      <span>Experience</span>
+      <button data-close="win-experience">×</button>
+    </div>
+    <div class="content">
+      <div class="proj">
+        <h4>AI Engineer Intern — Wuhan Survey & Design Institute</h4>
+        <p>Apr 2026 – Sep 2026 · Remote. LLM-based intent router + Plan-and-Execute multi-agent orchestration; pushed routing accuracy from 65% to 90%+ and cut workflow latency 50%.</p>
+      </div>
+      <div class="proj">
+        <h4>Software Development Engineer Intern — HireBeat</h4>
+        <p>Apr 2025 – Jul 2025 · Remote. LLM-driven document-to-presentation pipeline with ViT-based layout understanding; improved content/design/structure quality 13–29%+ over baselines.</p>
+      </div>
+      <div class="proj">
+        <h4>Software Development Engineer Intern — Microsoft Research Asia</h4>
+        <p>Jun 2023 – Aug 2023 · Beijing. Cross-dataset facial analytics pipeline (FER2013, KDEF) with ResNet50 transfer learning — 82.3% emotion accuracy, 99.0% gender accuracy.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="win-playlist" style="top:230px;left:180px;">
+    <div class="titlebar">
+      <svg class="twin-icon" viewBox="0 0 24 24"><path d="M9 18V5l11-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="17" cy="16" r="3"/></svg>
+      <span>Playlist</span>
+      <button data-close="win-playlist">×</button>
+    </div>
+    <div class="content">
+      <p class="muted">Add your build/study playlist here — track names, links, whatever fits your vibe.</p>
+    </div>
+  </div>
+
+  <div class="win" id="win-contact" style="top:130px;left:400px;">
+    <div class="titlebar">
+      <svg class="twin-icon" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+      <span>Contact</span>
+      <button data-close="win-contact">×</button>
+    </div>
+    <div class="content">
+      <p>Email: <a class="link" href="mailto:shi.jiaqi1@northeastern.edu">shi.jiaqi1@northeastern.edu</a></p>
+      <p>Phone: (857) 654-7075</p>
+      <p>LinkedIn: <a class="link" href="https://www.linkedin.com/in/jiaqis/" target="_blank" rel="noopener noreferrer">linkedin.com/in/jiaqis</a></p>
+      <p>GitHub: <a class="link" href="https://github.com/KianaShi" target="_blank" rel="noopener noreferrer">github.com/KianaShi</a></p>
+    </div>
+  </div>
+
+  <div class="win" id="win-resume" style="top:80px;left:340px;">
+    <div class="titlebar">
+      <svg class="twin-icon" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7Z"/><path d="M14 3v4h4"/><path d="M9.5 12h5M9.5 15h5M9.5 9h2"/></svg>
+      <span>Résumé.pdf</span>
+      <button data-close="win-resume">×</button>
+    </div>
+    <div class="content">
+      <p style="margin-top:8px;"><a class="link" href="KS_resume.pdf" target="_blank" rel="noopener noreferrer">Open résumé.pdf →</a></p>
+    </div>
+  </div>
+
+  <div class="win" id="win-facts" style="top:170px;left:420px;">
+    <div class="titlebar">
+      <svg class="twin-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 17v.01M12 8a2.5 2.5 0 0 1 2.5 2.5c0 1.7-2.5 1.9-2.5 4"/></svg>
+      <span>Fun Facts</span>
+      <button data-close="win-facts">×</button>
+    </div>
+    <div class="content">
+      <ul>
+        <li>An "agent" in AI just means a model that can take actions, not just answer questions.</li>
+        <li>Most RAG failures aren't the model — they're bad retrieval.</li>
+        <li>Add your own fun facts here.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="win" id="win-guestbook" style="top:220px;left:260px;">
+    <div class="titlebar">
+      <svg class="twin-icon" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H8l-5 4V6a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2Z"/></svg>
+      <span>Guestbook</span>
+      <button data-close="win-guestbook">×</button>
+    </div>
+    <div class="content">
+      <p>👋 Hey — thanks for stopping by. Wire this up to a real form (or Google Form) if you want visitors to leave a note.</p>
+    </div>
+  </div>
+
+  <div class="win" id="win-trash" style="top:260px;left:300px;">
+    <div class="titlebar">
+      <svg class="twin-icon" viewBox="0 0 24 24"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>
+      <span>Recycle Bin</span>
+      <button data-close="win-trash">×</button>
+    </div>
+    <div class="content">
+      <p class="muted">Empty. I don't throw away good ideas.</p>
+    </div>
+  </div>
+
+  <!-- taskbar -->
+  <div class="taskbar">
+    <div id="startBtn">✦ Start</div>
+    <div class="status"><span class="dot"></span>System Online</div>
+    <div class="spacer"></div>
+    <div id="taskClock">00:00 PM</div>
+  </div>
+
+  <div class="start-menu" id="startMenu">
+    <a href="index.html">↺ Back to intro</a>
+    <a href="#win-work" data-win="win-work">📁 Selected Work</a>
+    <a href="#win-about" data-win="win-about">🙂 About Me</a>
+    <a href="#win-contact" data-win="win-contact">✉ Contact</a>
+  </div>
+
+<script src="src/desktop.js"></script>
+</body>
+</html>

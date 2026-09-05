@@ -1,0 +1,24 @@
+node_modules/
+build/
+tools/node_modules/
+
+*.log
+*.pkl
+
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/
+
+# Licensed source asset pack (read-only, multi-GB, not for redistribution) —
+# only the exported/optimized GLBs in tools/_bgtest/generated/ are used at runtime.
+3d/
+
+# Python venv for the Blender export scripts — regenerate with:
+#   python -m venv tools/_bgtest/venv-blender && tools/_bgtest/venv-blender/Scripts/pip install bpy
+tools/_bgtest/venv-blender/
+
+# Ad-hoc QA screenshots from background-experiment testing sessions — not build output,
+# no lasting reference value once a round is written up.
+tools/_bgtest/screenshots/
