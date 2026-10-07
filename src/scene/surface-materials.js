@@ -7,6 +7,7 @@
   // planks with visible seams, which reads as a floor rather than a desk top, so it isn't
   // reused here.
   var ctx = window.__ctx;
+  ctx.makeGlass = makeGlass; // pc-lighting.js reuses it for the replacement glass panes
 
   var POLL_MS = 200, POLL_TIMEOUT_MS = 30000;
 

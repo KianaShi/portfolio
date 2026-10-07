@@ -107,6 +107,82 @@
     return plane;
   }
 
+  // ---------------------------------------------------------------- glass panes
+  // The GLB's front glass stops at the fan column (x≈1.96) while the side-intake fans sit
+  // at x≈2.03-2.07 and poke ~1.5cm past the glass plane, so that column read as an open,
+  // unpanelled case. Both panes are rebuilt from the GLB's own extents: the front one runs
+  // out to the I/O pillar and sits just ahead of the fans. Each gets the black silkscreen
+  // border real tempered panels have — it's what lets the eye find the pane at all
+  // against a dark room, instead of the glass reading as empty air.
+  var FRIT_M = 0.014;   // border width, world units
+
+  function fritTexture(w, h){
+    var PX = 1024, cw = Math.round(PX * Math.min(1, w / h)), ch = Math.round(PX * Math.min(1, h / w));
+    var cv = document.createElement('canvas'); cv.width = cw; cv.height = ch;
+    var c2 = cv.getContext('2d');
+    var bx = Math.max(2, Math.round(cw * FRIT_M / w)), by = Math.max(2, Math.round(ch * FRIT_M / h));
+    // The pane's material opacity is 1 and the alpha lives here instead, so the border
+    // can be far more opaque than the clear glass (opacity would cap both).
+    c2.fillStyle = 'rgba(255,255,255,0.24)';   // clear glass (rgb is a color multiplier)
+    c2.fillRect(bx, by, cw - bx * 2, ch - by * 2);
+    c2.fillStyle = 'rgba(8,8,10,0.96)';        // frit band, near-black and nearly opaque
+    c2.fillRect(0, 0, cw, by); c2.fillRect(0, ch - by, cw, by);
+    c2.fillRect(0, by, bx, ch - by * 2); c2.fillRect(cw - bx, by, bx, ch - by * 2);
+    var t = new THREE.CanvasTexture(cv);
+    t.encoding = THREE.sRGBEncoding;
+    t.anisotropy = ctx.renderer.capabilities.getMaxAnisotropy();
+    return t;
+  }
+
+  function glassPane(w, h){
+    var m = new THREE.MeshStandardMaterial({
+      name: 'glass', color: 0x1c2126, metalness: 0, roughness: 0.05,
+      transparent: true, opacity: 1, depthWrite: false, map: fritTexture(w, h)
+    });
+    ctx.makeGlass(m);
+    var mesh = new THREE.Mesh(new THREE.PlaneGeometry(w, h), m);
+    mesh.renderOrder = 2;   // after the case's own transparent parts
+    return mesh;
+  }
+
+  function rebuildGlass(pc){
+    var get = function(n){ return pc.getObjectByName(n); };
+    var box = function(o){ return new THREE.Box3().setFromObject(o); };
+    var front = get('front_panel'), side = get('sidepanel'), button = get('power_on_button_1');
+    if (!front || !side) return [];
+    var fb = box(front), sb = box(side);
+    var fanFront = fb.max.z;
+    ['case_fan', 'case_fan001', 'case_fan002'].forEach(function(n){
+      var f = get(n); if (f) fanFront = Math.max(fanFront, box(f).max.z);
+    });
+    var right = button ? box(button).min.x - 0.004 : fb.max.x;
+    var panes = [];
+
+    var fw = right - fb.min.x, fh = fb.max.y - fb.min.y;
+    var fp = glassPane(fw, fh);
+    fp.position.set(fb.min.x + fw / 2, fb.min.y + fh / 2, fanFront + 0.003);
+    panes.push(fp);
+
+    var sw = sb.max.z - sb.min.z, sh = sb.max.y - sb.min.y;
+    var sp = glassPane(sw, sh);
+    sp.rotation.y = -Math.PI / 2;               // face -x, like the GLB pane
+    sp.position.set(sb.min.x - 0.001, sb.min.y + sh / 2, sb.min.z + sw / 2);
+    panes.push(sp);
+
+    front.visible = false; side.visible = false;
+    panes.forEach(function(p){ ctx.scene.add(p); });
+    return panes;
+  }
+
+  // Faint neutral light off the front-right so the right-hand I/O pillar and the front
+  // pane's edge separate from the dark room behind them (black-on-black otherwise).
+  function addRimLight(pc){
+    var b = new THREE.Box3().setFromObject(pc);
+    var light = new THREE.PointLight(0xc8d6ff, 0.35, 1.6, 2);
+    light.position.set(b.max.x + 0.35, b.max.y + 0.15, b.max.z + 0.35);
+    ctx.scene.add(light);
+  }
+
   var started = Date.now();
   var pollId = setInterval(function(){
     if (Date.now() - started > POLL_TIMEOUT_MS){
@@ -121,11 +197,13 @@
     clearInterval(pollId);
 
     addFanLights(pc);
+    addRimLight(pc);
     var shadow = addContactShadow(pc);
-    // fan lights stay on during capture: toggling a light changes the light count and
+    var panes = rebuildGlass(pc);
+    // lights stay on during capture: toggling a light changes the light count and
     // would recompile every material in the scene on each re-capture
-    var capture = makeCapture(pc, [shadow]);
-    var mats = pcMaterials(pc);
+    var capture = makeCapture(pc, [shadow].concat(panes));
+    var mats = pcMaterials(pc).concat(panes.map(function(p){ return p.material; }));
     function apply(){
       var env = capture();
       mats.forEach(function(m){
