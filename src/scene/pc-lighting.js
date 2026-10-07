@@ -215,6 +215,35 @@
     return wall;
   }
 
+  // Nor does it have a motherboard tray: the board (x≈1.82-1.97) floats with nothing
+  // behind it, so past its front edge the eye dropped ~13cm deeper onto the right wall and
+  // read the step as a missing piece of panel. The tray sits just behind the board, from
+  // the case back to where the side fan column starts, in the right wall's material.
+  function addTray(pc, wallMaterial){
+    var side = pc.getObjectByName('sidepanel'), frame = pc.getObjectByName('frame_1');
+    if (!side || !frame || !wallMaterial) return null;
+    var box = function(o){ return new THREE.Box3().setFromObject(o); };
+    var boardBack = -Infinity, fanStart = Infinity;
+    pc.traverse(function(o){
+      if (!o.isMesh) return;
+      if (/^Motherboard/.test(o.name)) boardBack = Math.max(boardBack, box(o).max.x);
+      if (/^CASE_FAN_FRAME(00[12])?$/.test(o.name)) fanStart = Math.min(fanStart, box(o).min.z);
+    });
+    if (!isFinite(boardBack) || !isFinite(fanStart)) return null;
+    var sb = box(side), fb = box(frame);
+    var T = 0.006, bottom = fb.min.y + 0.01, back = sb.min.z, front = fanStart - 0.004;
+    var H = sb.max.y - bottom, D = front - back;
+    var geo = new THREE.BoxGeometry(T, H, D);
+    var uv = geo.attributes.uv;
+    for (var i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * D / 0.25, uv.getY(i) * H / 0.25);
+    var tray = new THREE.Mesh(geo, wallMaterial);
+    tray.position.set(boardBack + 0.002 + T / 2, bottom + H / 2, back + D / 2);
+    tray.castShadow = tray.receiveShadow = true;
+    tray.name = 'PC_MB_TRAY';
+    ctx.scene.add(tray);
+    return tray;
+  }
+
   var started = Date.now();
   var pollId = setInterval(function(){
     if (Date.now() - started > POLL_TIMEOUT_MS){
@@ -233,9 +262,10 @@
     var shadow = addContactShadow(pc);
     var panes = rebuildGlass(pc);
     var wall = addRightWall(pc);
+    var tray = addTray(pc, wall && wall.material);
     // lights stay on during capture: toggling a light changes the light count and
     // would recompile every material in the scene on each re-capture
-    var capture = makeCapture(pc, [shadow].concat(panes, wall ? [wall] : []));
+    var capture = makeCapture(pc, [shadow].concat(panes, [wall, tray].filter(Boolean)));
     var mats = pcMaterials(pc).concat(panes.map(function(p){ return p.material; }), wall ? [wall.material] : []);
     function apply(){
       var env = capture();
