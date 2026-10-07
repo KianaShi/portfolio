@@ -187,18 +187,28 @@
   // The model has no right side wall — checked against the source FBX's 36 objects, it was
   // never there (not lost in conversion). Past the side-intake fans (x≈2.07) there's only
   // the outer frame rails (frame_1, to x≈2.10), so the gaps between those fans showed the
-  // room straight through. A plain deep-charcoal steel panel closes it, spanning the same
-  // height/depth as the glass side panel opposite: fairly rough and only half-metallic, so
-  // it reads as a solid backdrop for the fans with just a faint environment sheen.
+  // room straight through. A deep-charcoal brushed steel panel (the chassis' own grain,
+  // but rough and only half-metallic) closes it like a fan bracket / cable-chamber wall:
+  // full depth inside the frame, from the bottom chamber (the lowest side fan sits below
+  // the glass side panel's bottom edge) to the top of the case. Extents come from the
+  // static frame, not the fan blades, whose bbox shifts as they spin. The side fan light
+  // spills onto it.
   function addRightWall(pc){
     var side = pc.getObjectByName('sidepanel'), frame = pc.getObjectByName('frame_1');
     if (!side || !frame) return null;
-    var sb = new THREE.Box3().setFromObject(side), outer = new THREE.Box3().setFromObject(frame).max.x;
-    var T = 0.006, D = sb.max.z - sb.min.z, H = sb.max.y - sb.min.y;
-    var wall = new THREE.Mesh(new THREE.BoxGeometry(T, H, D), new THREE.MeshStandardMaterial({
-      name: 'PC_RIGHT_WALL', color: 0x141518, roughness: 0.7, metalness: 0.35
+    var box = function(o){ return new THREE.Box3().setFromObject(o); };
+    var sb = box(side), fb = box(frame);
+    var bottom = fb.min.y + 0.01, back = sb.min.z, front = fb.max.z - 0.002;
+    var T = 0.006, D = front - back, H = sb.max.y - bottom, outer = fb.max.x;
+    var geo = new THREE.BoxGeometry(T, H, D);
+    // world-scaled UVs so the brushed grain matches the shell's 0.25-unit tiling
+    var uv = geo.attributes.uv;
+    for (var i = 0; i < uv.count; i++) uv.setXY(i, uv.getX(i) * D / 0.25, uv.getY(i) * H / 0.25);
+    var wall = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+      name: 'PC_RIGHT_WALL', color: 0x141518, roughness: 0.7, metalness: 0.35,
+      normalMap: frame.material.normalMap, normalScale: new THREE.Vector2(0.3, 0.3)
     }));
-    wall.position.set(outer - 0.002 - T / 2, sb.min.y + H / 2, sb.min.z + D / 2);
+    wall.position.set(outer - 0.002 - T / 2, bottom + H / 2, back + D / 2);
     wall.castShadow = wall.receiveShadow = true;
     wall.name = 'PC_RIGHT_WALL';
     ctx.scene.add(wall);
