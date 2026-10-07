@@ -91,7 +91,7 @@
   .social a:focus-visible{outline:2px solid var(--screen-glow);outline-offset:2px;}
   .social svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.6;}
   .identity{
-    position:absolute;left:32px;bottom:70px;max-width:580px; /* same edge inset as .social */
+    position:absolute;left:32px;bottom:32px;max-width:580px; /* same edge inset as .social */
     pointer-events:none;
     opacity:1;transform:translateY(0);
     transition:opacity 0.9s ease, transform 0.9s ease;
