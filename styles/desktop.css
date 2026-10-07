@@ -16,7 +16,7 @@
     user-select:none;
   }
   body{
-    background:url('../Windows-XP-Bliss-Wallpaper-4K-scaled.jpg') center center / cover no-repeat;
+    background:var(--bg-deep) center center / cover no-repeat; /* image set by desktop.js per time of day */
     min-height:100vh;
     position:relative;
   }

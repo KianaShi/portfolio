@@ -22,3 +22,6 @@ tools/_bgtest/venv-blender/
 # Ad-hoc QA screenshots from background-experiment testing sessions — not build output,
 # no lasting reference value once a round is written up.
 tools/_bgtest/screenshots/
+
+# Original wallpaper JPGs; the site uses the converted copies in assets/wallpapers/
+壁纸/

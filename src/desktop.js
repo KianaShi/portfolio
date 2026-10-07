@@ -5,6 +5,14 @@
   // an icon or a start-menu link — instead of leaving focus stranded on a removed dialog.
   var lastTrigger = {};
 
+  // ---- wallpaper: eyes-open art for the current time of day (src/wallpaper.js); set
+  // only once decoded so a period change swaps cleanly instead of painting top-down.
+  Wallpaper.watch(function(p){
+    var img = new Image();
+    img.onload = function(){ document.body.style.backgroundImage = 'url("' + img.src + '")'; };
+    img.src = Wallpaper.url('wallpaper', p);
+  });
+
   // ---- ARIA setup, done once here at init rather than hand-written into desktop.html,
   // since it's the same handful of attributes repeated across 11 near-identical blocks
   // and deriving them from the visible text keeps the label and the DOM in sync for free.

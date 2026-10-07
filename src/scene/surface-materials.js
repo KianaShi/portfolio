@@ -97,25 +97,22 @@
     return { map: canvasTexture(col, true), roughnessMap: canvasTexture(rgh, false), normalMap: canvasTexture(heightToNormal(height, S, 1.6), false) };
   }
 
-  // ---------------------------------------------------------------- powder coat
-  // Fine orange-peel texture typical of a painted steel case panel.
-  function buildPowderCoat(){
-    var S = 512, n1 = makeNoise(101), n2 = makeNoise(202);
-    var height = new Float32Array(S * S);
-    var rgh = document.createElement('canvas'); rgh.width = rgh.height = S;
-    var rc = rgh.getContext('2d'), ri = rc.createImageData(S, S);
-    for (var y = 0; y < S; y++){
-      for (var x = 0; x < S; x++){
-        var u = x / S, v = y / S;
-        var h = n1(u * 64, v * 64, 64, 64) * 0.7 + n2(u * 160, v * 160, 160, 160) * 0.3;
-        height[y * S + x] = h;
-        var r = 0.5 + (n1(u * 8, v * 8, 8, 8) - 0.5) * 0.12 + (h - 0.5) * 0.1;
-        var o = (y * S + x) * 4;
-        ri.data[o] = ri.data[o + 1] = ri.data[o + 2] = r * 255; ri.data[o + 3] = 255;
-      }
+  // ---------------------------------------------------------------- brushed iron
+  // Roughness + normal from the PC pack's own Brushed_iron_02 set (3d/pc/textures.rar,
+  // downsized to 512). The GLB only carries it on "Textured Metal.001"; the case shell has
+  // no UVs there, so it's applied here through the box-projected UVs below.
+  function loadBrushedIron(){
+    var loader = new THREE.TextureLoader();
+    function load(path){
+      var t = loader.load(path);
+      t.wrapS = t.wrapT = THREE.RepeatWrapping;
+      t.anisotropy = ctx.renderer ? ctx.renderer.capabilities.getMaxAnisotropy() : 1;
+      return t;
     }
-    rc.putImageData(ri, 0, 0);
-    return { roughnessMap: canvasTexture(rgh, false), normalMap: canvasTexture(heightToNormal(height, S, 2.2), false) };
+    return {
+      roughnessMap: load('assets/pc/textures/brushed-iron-roughness.jpg'),
+      normalMap: load('assets/pc/textures/brushed-iron-normal.jpg')
+    };
   }
 
   // ---------------------------------------------------------------- box UVs
@@ -186,35 +183,54 @@
   }
 
   function upgradePc(pc, envMap){
-    var coat = buildPowderCoat();
+    var iron = loadBrushedIron();
     pc.traverse(function(o){
       if (!o.isMesh || !o.material) return;
       forEachMat(o, function(m){
         var name = m.name || '';
         if (/^(black|BLACK matt)$/i.test(name)){
-          // painted steel shell: dielectric paint over metal, fine orange-peel grain
-          boxProjectUVs(o, 0.12);
-          m.color.setHex(0x101012);
-          m.metalness = 0.15; m.roughness = 1;
-          m.roughnessMap = coat.roughnessMap; m.normalMap = coat.normalMap;
-          m.normalScale = new THREE.Vector2(0.35, 0.35);
+          // black brushed aluminium shell (roughnessMap multiplies `roughness`)
+          boxProjectUVs(o, 0.25);
+          m.color.setHex(0x1b1c20);
+          m.metalness = 0.85; m.roughness = 0.75;
+          m.roughnessMap = iron.roughnessMap; m.normalMap = iron.normalMap;
+          m.normalScale = new THREE.Vector2(0.4, 0.4);
         } else if (/^(BLACK AIO|BLACK PLASTIC\.001|Black Plastic\.001|BLACK thread)$/i.test(name)){
           m.metalness = 0; m.roughness = Math.max(m.roughness, 0.45);
         } else if (/^Metal$/i.test(name)){
-          m.metalness = 0.95; m.roughness = 0.32;
+          // motherboard tray / back plate: the GLB's light gray at metalness 0.95 mirrored
+          // the bright RoomEnvironment and read as a white slab, so it's dark gunmetal here
+          m.color.setHex(0x232529);
+          m.metalness = 0.9; m.roughness = 0.38;
+        } else if (/^LOGO\.001$/i.test(name)){
+          // GPU shroud + AIO pump ring: pure white in the GLB, matched to the dark case
+          m.color.setHex(0x26282d);
+          m.metalness = 0.9; m.roughness = 0.3;
+        } else if (/^TRANSPARENT WHITE\. RGB FANS$/i.test(name)){
+          // fan blades: the GLB sets opacity 0.48 but not `transparent`, so they rendered as
+          // solid white; translucent with the existing cyan emissive reads as lit RGB fans
+          m.color.setHex(0xdffbff);
+          m.metalness = 0; m.roughness = 0.4;
+          m.transparent = true; m.opacity = 0.35; m.depthWrite = false;
+          m.emissiveIntensity = 0.6;
+        } else if (/^Material\.012$/i.test(name)){
+          // opacity 0 in the GLB (meant to be invisible) but not flagged transparent
+          m.visible = false;
         } else if (/^(glass|glass\.003)$/i.test(name)){
           // smoked tempered glass. r128 scales reflections by opacity under normal
-          // blending, so the panel needs some opacity (and a strong envMap) for the sheen
-          // to read at all — at the GLB's own 0.05-0.13 it was effectively invisible.
+          // blending, so the panel needs some opacity for the sheen to read; any stronger
+          // than this and it lays a milky white film over the whole interior.
           m.color.setHex(0x2a3036);
           m.metalness = 0; m.roughness = 0.03;
-          m.transparent = true; m.opacity = 0.2; m.depthWrite = false;
+          m.transparent = true; m.opacity = 0.14; m.depthWrite = false;
         } else if (/^Board Material$/i.test(name)){
           m.metalness = 0.1; m.roughness = 0.55;
         }
         if (envMap && !m.envMap){
           m.envMap = envMap;
-          m.envMapIntensity = /glass/i.test(name) ? 4 : 0.45;
+          m.envMapIntensity = /glass/i.test(name) ? 1.6
+            : /^(black|BLACK matt|LOGO\.001)$/i.test(name) ? 1.0
+            : /^Metal$/i.test(name) ? 0.9 : 0.45;
         }
         m.needsUpdate = true;
       });
