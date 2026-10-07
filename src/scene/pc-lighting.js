@@ -81,6 +81,7 @@
       ctx.scene.add(light);
       lights.push(light);
     });
+    ctx.pcFanLights = lights;   // recolored over time by pc-rgb.js
     return lights;
   }
 
@@ -266,9 +267,14 @@
     // lights stay on during capture: toggling a light changes the light count and
     // would recompile every material in the scene on each re-capture
     var capture = makeCapture(pc, [shadow].concat(panes, [wall, tray].filter(Boolean)));
-    var mats = pcMaterials(pc).concat(panes.map(function(p){ return p.material; }), wall ? [wall.material] : []);
+    var extras = panes.concat([wall, tray].filter(Boolean));
     function apply(){
       var env = capture();
+      // re-collected each time: pc-rgb.js swaps in per-mesh material clones after this
+      // first runs, and the previous capture is disposed, so a stale list would leave
+      // those clones pointing at a dead env texture
+      var mats = pcMaterials(pc);
+      extras.forEach(function(o){ if (mats.indexOf(o.material) < 0) mats.push(o.material); });
       mats.forEach(function(m){
         if (!('envMap' in m)) return;
         m.envMap = env;
