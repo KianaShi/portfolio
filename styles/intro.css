@@ -102,18 +102,18 @@
     transition:opacity 0.9s ease, transform 0.9s ease;
   }
   .identity .eyebrow{
-    font-size:13px;letter-spacing:0.12em;color:var(--warm);
+    font-size:15px;letter-spacing:0.12em;color:var(--warm);
     margin-bottom:12px;text-transform:uppercase;
   }
   .identity h1{
     font-family:'Ananda Black', 'Space Grotesk', sans-serif;
-    font-weight:600;font-size:clamp(39px,calc(5vw + 5px),61px);
+    font-weight:600;font-size:clamp(41px,calc(5vw + 7px),63px);
     letter-spacing:-0.01em;line-height:1.1;color:var(--ink);
-    margin-bottom:14px;
+    margin-bottom:10px;
   }
   .identity p{
     font-family:'IBM Plex Mono', monospace; /* matches the eyebrow line */
-    font-size:17px;color:var(--muted);line-height:1.6;font-weight:400;
+    font-size:19px;color:var(--muted);line-height:1.6;font-weight:400;
   }
 
   .sr-only{

@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles/intro.css?v=20261007224515">
+<link rel="stylesheet" href="styles/intro.css?v=20261007224600">
 </head>
 <body>
 <div id="loadingOverlay">loading scene<span class="dot" aria-hidden="true"></span></div>
@@ -21,8 +21,8 @@
       <a href="mailto:shi.jiaqi1@northeastern.edu" title="Email" aria-label="Email"><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></a>
     </div>
     <div class="identity" id="identity">
-      <div class="eyebrow">AI Agent Applications — Data — Product</div>
       <h1>Kiana Shi</h1>
+      <div class="eyebrow">AI Agent Applications — Data — Product</div>
       <p>M.S. student in Data Analytics Engineering at Northeastern University, with experience across machine learning, RAG, and agentic AI systems.</p>
     </div>
   </div>
@@ -48,28 +48,28 @@
 <!-- Load order matters: each file (classic script, not a module) reads/writes the shared
      window.__ctx object created by intro.js, in the same sequence the original single-file
      script ran in. -->
-<script src="src/cursor.js?v=20261007224515"></script>
-<script src="src/wallpaper.js?v=20261007224515"></script>
-<script src="src/intro.js?v=20261007224515"></script>
-<script src="src/scene/create-scene.js?v=20261007224515"></script>
-<script src="src/screen/screen-canvas.js?v=20261007224515"></script>
-<script src="src/scene/procedural-scene.js?v=20261007224515"></script>
-<script src="src/scene/load-models.js?v=20261007224515"></script>
-<script src="src/scene/surface-materials.js?v=20261007224515"></script>
-<script src="src/scene/desk-clock.js?v=20261007224515"></script>
-<script src="src/scene/pc-lighting.js?v=20261007224515"></script>
-<script src="src/scene/pc-rgb.js?v=20261007224515"></script>
+<script src="src/cursor.js?v=20261007224600"></script>
+<script src="src/wallpaper.js?v=20261007224600"></script>
+<script src="src/intro.js?v=20261007224600"></script>
+<script src="src/scene/create-scene.js?v=20261007224600"></script>
+<script src="src/screen/screen-canvas.js?v=20261007224600"></script>
+<script src="src/scene/procedural-scene.js?v=20261007224600"></script>
+<script src="src/scene/load-models.js?v=20261007224600"></script>
+<script src="src/scene/surface-materials.js?v=20261007224600"></script>
+<script src="src/scene/desk-clock.js?v=20261007224600"></script>
+<script src="src/scene/pc-lighting.js?v=20261007224600"></script>
+<script src="src/scene/pc-rgb.js?v=20261007224600"></script>
 <!-- Environment (Seattle day/night backdrop + the two near-camera buildings): each polls
      for the desk GLB's own nodes (Day/Window_1/Window_2/Window_3/monitor/PC_TOWER) rather
      than depending on load-models.js's async network callback directly, so load order here
      just needs to be after scene/camera exist and before interaction.js's render loop
      starts consuming ctx.environmentBlend-driven state. -->
-<script src="src/environment/day-night.js?v=20261007224515"></script>
-<script src="src/environment/buildings.js?v=20261007224515"></script>
-<script src="src/player/tracks.js?v=20261007224515"></script>
-<script src="src/player/phone-player-canvas.js?v=20261007224515"></script>
-<script src="src/player/phone-player.js?v=20261007224515"></script>
-<script src="src/screen/boot-animation.js?v=20261007224515"></script>
-<script src="src/interaction.js?v=20261007224515"></script>
+<script src="src/environment/day-night.js?v=20261007224600"></script>
+<script src="src/environment/buildings.js?v=20261007224600"></script>
+<script src="src/player/tracks.js?v=20261007224600"></script>
+<script src="src/player/phone-player-canvas.js?v=20261007224600"></script>
+<script src="src/player/phone-player.js?v=20261007224600"></script>
+<script src="src/screen/boot-animation.js?v=20261007224600"></script>
+<script src="src/interaction.js?v=20261007224600"></script>
 </body>
 </html>
