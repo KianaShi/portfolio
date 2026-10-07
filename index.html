@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles/intro.css?v=20261007085429">
+<link rel="stylesheet" href="styles/intro.css?v=20261007090037">
 </head>
 <body>
 <div id="loadingOverlay">loading scene<span class="dot" aria-hidden="true"></span></div>
@@ -48,27 +48,27 @@
 <!-- Load order matters: each file (classic script, not a module) reads/writes the shared
      window.__ctx object created by intro.js, in the same sequence the original single-file
      script ran in. -->
-<script src="src/cursor.js?v=20261007085429"></script>
-<script src="src/wallpaper.js?v=20261007085429"></script>
-<script src="src/intro.js?v=20261007085429"></script>
-<script src="src/scene/create-scene.js?v=20261007085429"></script>
-<script src="src/screen/screen-canvas.js?v=20261007085429"></script>
-<script src="src/scene/procedural-scene.js?v=20261007085429"></script>
-<script src="src/scene/load-models.js?v=20261007085429"></script>
-<script src="src/scene/surface-materials.js?v=20261007085429"></script>
-<script src="src/scene/desk-clock.js?v=20261007085429"></script>
-<script src="src/scene/pc-lighting.js?v=20261007085429"></script>
+<script src="src/cursor.js?v=20261007090037"></script>
+<script src="src/wallpaper.js?v=20261007090037"></script>
+<script src="src/intro.js?v=20261007090037"></script>
+<script src="src/scene/create-scene.js?v=20261007090037"></script>
+<script src="src/screen/screen-canvas.js?v=20261007090037"></script>
+<script src="src/scene/procedural-scene.js?v=20261007090037"></script>
+<script src="src/scene/load-models.js?v=20261007090037"></script>
+<script src="src/scene/surface-materials.js?v=20261007090037"></script>
+<script src="src/scene/desk-clock.js?v=20261007090037"></script>
+<script src="src/scene/pc-lighting.js?v=20261007090037"></script>
 <!-- Environment (Seattle day/night backdrop + the two near-camera buildings): each polls
      for the desk GLB's own nodes (Day/Window_1/Window_2/Window_3/monitor/PC_TOWER) rather
      than depending on load-models.js's async network callback directly, so load order here
      just needs to be after scene/camera exist and before interaction.js's render loop
      starts consuming ctx.environmentBlend-driven state. -->
-<script src="src/environment/day-night.js?v=20261007085429"></script>
-<script src="src/environment/buildings.js?v=20261007085429"></script>
-<script src="src/player/tracks.js?v=20261007085429"></script>
-<script src="src/player/phone-player-canvas.js?v=20261007085429"></script>
-<script src="src/player/phone-player.js?v=20261007085429"></script>
-<script src="src/screen/boot-animation.js?v=20261007085429"></script>
-<script src="src/interaction.js?v=20261007085429"></script>
+<script src="src/environment/day-night.js?v=20261007090037"></script>
+<script src="src/environment/buildings.js?v=20261007090037"></script>
+<script src="src/player/tracks.js?v=20261007090037"></script>
+<script src="src/player/phone-player-canvas.js?v=20261007090037"></script>
+<script src="src/player/phone-player.js?v=20261007090037"></script>
+<script src="src/screen/boot-animation.js?v=20261007090037"></script>
+<script src="src/interaction.js?v=20261007090037"></script>
 </body>
 </html>

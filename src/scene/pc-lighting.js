@@ -17,7 +17,8 @@
   var ENV_INTENSITY = {
     'glass': 3.0, 'glass.003': 3.0,
     'black': 3.5, 'BLACK matt': 3.5,
-    'LOGO.001': 2.4, 'Metal': 2.0, 'Textured Metal.001': 2.0
+    'LOGO.001': 2.4, 'Metal': 2.0, 'Textured Metal.001': 2.0,
+    'PC_RIGHT_WALL': 1.0
   };
   var ENV_DEFAULT = 1.2;
 
@@ -183,6 +184,27 @@
     ctx.scene.add(light);
   }
 
+  // The model has no right side wall — checked against the source FBX's 36 objects, it was
+  // never there (not lost in conversion). Past the side-intake fans (x≈2.07) there's only
+  // the outer frame rails (frame_1, to x≈2.10), so the gaps between those fans showed the
+  // room straight through. A plain deep-charcoal steel panel closes it, spanning the same
+  // height/depth as the glass side panel opposite: fairly rough and only half-metallic, so
+  // it reads as a solid backdrop for the fans with just a faint environment sheen.
+  function addRightWall(pc){
+    var side = pc.getObjectByName('sidepanel'), frame = pc.getObjectByName('frame_1');
+    if (!side || !frame) return null;
+    var sb = new THREE.Box3().setFromObject(side), outer = new THREE.Box3().setFromObject(frame).max.x;
+    var T = 0.006, D = sb.max.z - sb.min.z, H = sb.max.y - sb.min.y;
+    var wall = new THREE.Mesh(new THREE.BoxGeometry(T, H, D), new THREE.MeshStandardMaterial({
+      name: 'PC_RIGHT_WALL', color: 0x141518, roughness: 0.7, metalness: 0.35
+    }));
+    wall.position.set(outer - 0.002 - T / 2, sb.min.y + H / 2, sb.min.z + D / 2);
+    wall.castShadow = wall.receiveShadow = true;
+    wall.name = 'PC_RIGHT_WALL';
+    ctx.scene.add(wall);
+    return wall;
+  }
+
   var started = Date.now();
   var pollId = setInterval(function(){
     if (Date.now() - started > POLL_TIMEOUT_MS){
@@ -200,10 +222,11 @@
     addRimLight(pc);
     var shadow = addContactShadow(pc);
     var panes = rebuildGlass(pc);
+    var wall = addRightWall(pc);
     // lights stay on during capture: toggling a light changes the light count and
     // would recompile every material in the scene on each re-capture
-    var capture = makeCapture(pc, [shadow].concat(panes));
-    var mats = pcMaterials(pc).concat(panes.map(function(p){ return p.material; }));
+    var capture = makeCapture(pc, [shadow].concat(panes, wall ? [wall] : []));
+    var mats = pcMaterials(pc).concat(panes.map(function(p){ return p.material; }), wall ? [wall.material] : []);
     function apply(){
       var env = capture();
       mats.forEach(function(m){
