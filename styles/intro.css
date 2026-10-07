@@ -51,6 +51,11 @@
     white-space:nowrap;
   }
   .hint.hidden{opacity:0;animation:none;}
+  /* Below ~1440px the centered hint runs into the 580px-wide identity block at bottom-left,
+     so it moves to the bottom-right corner on the same 32px inset. */
+  @media (max-width:1440px){
+    .hint{left:auto;right:32px;bottom:32px;transform:none;}
+  }
   .hint{animation:flicker 4.5s ease-in-out infinite;}
   .hint .cursor{
     display:inline-block;margin-left:2px;
