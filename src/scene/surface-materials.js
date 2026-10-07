@@ -151,6 +151,29 @@
     return rt.texture;
   }
 
+  // ---------------------------------------------------------------- tempered glass
+  // Plain transparency scales reflections by opacity, which is what made the side panels
+  // read as tinted plastic. Here only the diffuse (tint) is alpha-weighted; the specular
+  // term (env reflection, already Fresnel-weighted by the BRDF) is added at full strength,
+  // and the panel also blocks more of what's behind it at grazing angles.
+  function makeGlass(m){
+    m.blending = THREE.CustomBlending;
+    m.blendEquation = THREE.AddEquation;
+    m.blendSrc = THREE.OneFactor;
+    m.blendDst = THREE.OneMinusSrcAlphaFactor;
+    m.onBeforeCompile = function(shader){
+      shader.fragmentShader = shader.fragmentShader.replace(
+        'gl_FragColor = vec4( outgoingLight, diffuseColor.a );',
+        [
+          'float glassF = pow( 1.0 - saturate( abs( dot( geometry.normal, geometry.viewDir ) ) ), 5.0 );',
+          'float glassA = 1.0 - ( 1.0 - diffuseColor.a ) * ( 1.0 - glassF );',
+          'gl_FragColor = vec4( ( reflectedLight.directDiffuse + reflectedLight.indirectDiffuse ) * glassA +',
+          '  reflectedLight.directSpecular + reflectedLight.indirectSpecular + totalEmissiveRadiance, glassA );'
+        ].join('\n')
+      );
+    };
+  }
+
   // ---------------------------------------------------------------- apply
   function forEachMat(mesh, fn){
     var mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
@@ -220,9 +243,10 @@
           // smoked tempered glass. r128 scales reflections by opacity under normal
           // blending, so the panel needs some opacity for the sheen to read; any stronger
           // than this and it lays a milky white film over the whole interior.
-          m.color.setHex(0x2a3036);
-          m.metalness = 0; m.roughness = 0.03;
-          m.transparent = true; m.opacity = 0.14; m.depthWrite = false;
+          m.color.setHex(0x1c2126);
+          m.metalness = 0; m.roughness = 0.04;
+          m.transparent = true; m.opacity = 0.22; m.depthWrite = false;
+          makeGlass(m);
         } else if (/^Board Material$/i.test(name)){
           m.metalness = 0.1; m.roughness = 0.55;
         }

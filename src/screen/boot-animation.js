@@ -52,7 +52,6 @@
     if (ctx.state.booted) return;
     ctx.state.booted = true;
     document.getElementById('hint').classList.add('hidden');
-    document.getElementById('sysState').textContent = 'ACTIVE';
     ctx.powerBtn.material.emissive.setHex(0x5fd6c2);
     ctx.powerBtn.material.emissiveIntensity = 0.8;
     typeStep();

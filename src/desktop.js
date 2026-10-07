@@ -29,11 +29,6 @@
     var twinIcon = win.querySelector('.titlebar svg');
     if (twinIcon) twinIcon.setAttribute('aria-hidden', 'true');
   });
-  document.querySelectorAll('.popup').forEach(function(popup){
-    var titleSpan = popup.querySelector('.ptitle span');
-    var closeBtn = popup.querySelector('.ptitle [data-close]');
-    if (closeBtn && titleSpan) closeBtn.setAttribute('aria-label', 'Close ' + titleSpan.textContent);
-  });
   icons.forEach(function(icon){
     var glyphSvg = icon.querySelector('.glyph svg');
     if (glyphSvg) glyphSvg.setAttribute('aria-hidden', 'true');
@@ -89,12 +84,7 @@
   document.querySelectorAll('[data-close]').forEach(function(btn){
     btn.addEventListener('click', function(e){
       e.stopPropagation();
-      var target = btn.getAttribute('data-close');
-      if (target === 'notePopup' || target === 'updatePopup'){
-        document.getElementById(target).classList.add('hidden');
-      } else {
-        closeWin(target);
-      }
+      closeWin(btn.getAttribute('data-close'));
     });
   });
 
@@ -203,9 +193,6 @@
     });
   });
 
-  document.getElementById('backToIntro').addEventListener('click', function(){
-    window.location.href = 'index.html';
-  });
 
   // clock
   function updateClock(){

@@ -87,16 +87,6 @@
     mouseY = (e.clientY / window.innerHeight) - 0.5;
   });
 
-  // clock
-  function updateClock(){
-    var d = new Date();
-    var hh = String(d.getHours()).padStart(2,'0');
-    var mm = String(d.getMinutes()).padStart(2,'0');
-    var ss = String(d.getSeconds()).padStart(2,'0');
-    document.getElementById('clock').textContent = hh+':'+mm+':'+ss;
-  }
-  setInterval(updateClock, 1000);
-  updateClock();
 
   // resize
   window.addEventListener('resize', function(){
