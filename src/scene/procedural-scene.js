@@ -373,12 +373,16 @@
   scene.add(deskPlant);
   deskCluster.push(deskPlant);
 
+  // named so scene-tuning.js can find these: they stay on after the real desk GLB replaces
+  // this fallback scene, sitting below the real desk top
   var deskPlantLight = new THREE.PointLight(0x8fb8c4, 0.4, 2.5, 2);
+  deskPlantLight.name = 'LEGACY_DESK_PLANT_LIGHT';
   deskPlantLight.position.set(-0.7, -0.2, 0.1);
   scene.add(deskPlantLight);
 
   // window light spilling onto the desk (cool glow + blind-stripe shadow)
   var deskWarmLight = new THREE.PointLight(0x8fb4d9, 0.6, 4, 2);
+  deskWarmLight.name = 'LEGACY_DESK_WINDOW_LIGHT';
   deskWarmLight.position.set(1.9, -0.3, -0.6);
   scene.add(deskWarmLight);
 
