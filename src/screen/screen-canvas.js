@@ -30,11 +30,27 @@
   // ~1.89:1, so the source is cropped to that aspect (not the canvas's 4:3) to land undistorted.
   var SCREEN_ASPECT = 1.89, SAVER_ALPHA = 0.75;
   var saverImg = null, lastIdleKey = '';
+  // The boot screen (after the click) shows the eyes-open wallpaper instead — the same art
+  // desktop.html opens on next, so the zoom-in hands off to the desktop seamlessly.
+  var bootImg = null;
   Wallpaper.watch(function(p){
     var img = new Image();
     img.onload = function(){ saverImg = img; lastIdleKey = ''; };
     img.src = Wallpaper.url('screensaver', p);
+    var wimg = new Image();
+    wimg.onload = function(){ bootImg = wimg; };
+    wimg.src = Wallpaper.url('wallpaper', p);
   });
+
+  // Art cropped to the screen mesh's aspect (see SCREEN_ASPECT), filling the canvas.
+  function drawArt(img, alpha){
+    var iw = img.naturalWidth, ih = img.naturalHeight;
+    var cw = iw, ch = iw / SCREEN_ASPECT;
+    if (ch > ih){ ch = ih; cw = ih * SCREEN_ASPECT; }
+    sctx.globalAlpha = alpha;
+    sctx.drawImage(img, (iw-cw)/2, (ih-ch)/2, cw, ch, 0, 0, sw, sh);
+    sctx.globalAlpha = 1;
+  }
 
   function drawIdleScreen(t){
     var shown;
@@ -64,14 +80,7 @@
 
     sctx.fillStyle = '#04181a';
     sctx.fillRect(0,0,sw,sh);
-    if (saverImg){
-      var iw = saverImg.naturalWidth, ih = saverImg.naturalHeight;
-      var cw = iw, ch = iw / SCREEN_ASPECT;
-      if (ch > ih){ ch = ih; cw = ih * SCREEN_ASPECT; }
-      sctx.globalAlpha = SAVER_ALPHA;
-      sctx.drawImage(saverImg, (iw-cw)/2, (ih-ch)/2, cw, ch, 0, 0, sw, sh);
-      sctx.globalAlpha = 1;
-    }
+    if (saverImg) drawArt(saverImg, SAVER_ALPHA);
     for (var y=0; y<sh; y+=3){
       sctx.fillStyle = 'rgba(0,0,0,0.12)';
       sctx.fillRect(0,y,sw,1);
@@ -103,16 +112,22 @@
   function drawBootScreen(){
     sctx.fillStyle = '#04181a';
     sctx.fillRect(0,0,sw,sh);
+    if (bootImg) drawArt(bootImg, 1);
     for (var y=0; y<sh; y+=3){
       sctx.fillStyle = 'rgba(0,0,0,0.12)';
       sctx.fillRect(0,y,sw,1);
     }
     sctx.font = '13px monospace';
     sctx.fillStyle = '#8ff0dd';
+    // over the art, a tight dark glow per glyph keeps the lines legible without a panel
+    // that would cover the character's face (the text block spans most of the width)
+    if (bootImg){ sctx.shadowColor = 'rgba(2,14,16,0.95)'; sctx.shadowBlur = 4; }
     var startY = 40;
     for (var i=0; i<ctx.typedText.length; i++){
       sctx.fillText(ctx.typedText[i], 18, startY + i*22);
+      if (bootImg) sctx.fillText(ctx.typedText[i], 18, startY + i*22);   // second pass darkens the glow
     }
+    sctx.shadowColor = 'transparent'; sctx.shadowBlur = 0;
     screenTexture.needsUpdate = true;
     screenTextureGLB.needsUpdate = true;
   }
