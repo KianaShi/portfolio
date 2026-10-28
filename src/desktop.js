@@ -86,7 +86,7 @@
   // Still just one shared pointermove/pointerup pair for all windows (not one per window —
   // see prior cleanup pass for why that mattered), now also reused by the resize handler
   // below so open windows can't get stranded off-screen or under the taskbar.
-  var TASKBAR_HEIGHT = 38;
+  var TASKBAR_HEIGHT = 48;
   var dragTarget = null, dragBar = null, dragPointerId = null, dragOffX = 0, dragOffY = 0;
 
   function clampToViewport(win, left, top){
@@ -193,8 +193,16 @@
     var ampm = h >= 12 ? 'PM' : 'AM';
     h = h % 12; if (h === 0) h = 12;
     var m = String(d.getMinutes()).padStart(2,'0');
-    document.getElementById('taskClock').textContent = h + ':' + m + ' ' + ampm;
+    var clock = document.getElementById('taskClock');
+    clock.querySelector('.time').textContent = h + ':' + m + ' ' + ampm;
+    clock.querySelector('.date').textContent = (d.getMonth() + 1) + '/' + d.getDate() + '/' + d.getFullYear();
   }
   setInterval(updateClock, 1000);
   updateClock();
+
+  // open on arrival so the work is visible without hunting for an icon
+  var startId = location.hash.slice(1);
+  if (!startId || !document.getElementById(startId) || !document.getElementById(startId).classList.contains('win')) startId = 'win-work';
+  var startIcon = document.querySelector('.icon[data-win="' + startId + '"]');
+  if (startIcon) activateIcon(startIcon); else openWin(startId);
 })();

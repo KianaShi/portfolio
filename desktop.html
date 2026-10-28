@@ -7,7 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="styles/desktop.css?v=20261028211939">
+<link rel="stylesheet" href="styles/desktop.css?v=20261028213323">
 </head>
 <body>
 
@@ -62,7 +62,7 @@
   </div>
 
   <!-- windows -->
-  <div class="win" id="win-work" style="top:70px;left:140px;">
+  <div class="win" id="win-work" style="top:12vh;left:calc(50% - 230px);">
     <div class="titlebar">
       <svg class="twin-icon" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/></svg>
       <span>Selected Work</span>
@@ -224,10 +224,12 @@
 
   <!-- taskbar -->
   <div class="taskbar">
-    <div id="startBtn">✦ Start</div>
-    <div class="status"><span class="dot"></span>System Online</div>
-    <div class="spacer"></div>
-    <div id="taskClock">00:00 PM</div>
+    <div id="startBtn" aria-label="Start"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="2" y="2" width="9.5" height="9.5" rx="1"/><rect x="12.5" y="2" width="9.5" height="9.5" rx="1"/><rect x="2" y="12.5" width="9.5" height="9.5" rx="1"/><rect x="12.5" y="12.5" width="9.5" height="9.5" rx="1"/></svg></div>
+    <div class="tray" aria-hidden="true">
+      <svg viewBox="0 0 24 24"><path d="M2 9a15 15 0 0 1 20 0"/><path d="M5.5 12.5a10 10 0 0 1 13 0"/><path d="M9 16a5 5 0 0 1 6 0"/><circle cx="12" cy="19.5" r="1" fill="currentColor"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z"/><path d="M15.5 9a4 4 0 0 1 0 6"/><path d="M18 6.5a7.5 7.5 0 0 1 0 11"/></svg>
+    </div>
+    <div id="taskClock"><span class="time">00:00 PM</span><span class="date">1/1/2026</span></div>
   </div>
 
   <div class="start-menu" id="startMenu">
@@ -237,8 +239,8 @@
     <a href="#win-contact" data-win="win-contact">✉ Contact</a>
   </div>
 
-<script src="src/cursor.js?v=20261028211939"></script>
-<script src="src/wallpaper.js?v=20261028211939"></script>
-<script src="src/desktop.js?v=20261028211939"></script>
+<script src="src/cursor.js?v=20261028213323"></script>
+<script src="src/wallpaper.js?v=20261028213323"></script>
+<script src="src/desktop.js?v=20261028213323"></script>
 </body>
 </html>

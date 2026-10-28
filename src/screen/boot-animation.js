@@ -59,9 +59,16 @@
     ctx.zoomFromFov = camera.fov;
     ctx.state.zooming = true;
     ctx.zoomStart = ctx.clock.getElapsedTime();
+    // the [ enter → ] link shows from the start so the skip is discoverable, and any
+    // click/key skips too — deferred a tick so the click that booted doesn't count
+    document.getElementById('enterLink').classList.add('show');
+    setTimeout(function(){
+      function skip(){ window.location.href = 'desktop.html'; }
+      window.addEventListener('pointerdown', skip, { once: true });
+      window.addEventListener('keydown', skip, { once: true });
+    }, 0);
     setTimeout(function(){
       document.getElementById('app').classList.add('fade-out');
-      document.getElementById('enterLink').classList.add('show');
       setTimeout(function(){
         window.location.href = 'desktop.html';
       }, 650);
