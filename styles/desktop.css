@@ -6,7 +6,7 @@
     --chrome-dark:#3a3730;
     --ink:#1c1a16;
     --muted:#6b6558;
-    --bg-deep:#0a0c11;
+    --bg-deep:#cfe4f2;
   }
   *{margin:0;padding:0;box-sizing:border-box;}
   html,body{
@@ -16,20 +16,26 @@
     user-select:none;
   }
   body{
-    background:var(--bg-deep) center center / cover no-repeat; /* image set by desktop.js per time of day */
+    background:var(--bg-deep) url("../assets/wallpapers/desktop.webp") center center / cover no-repeat;
     min-height:100vh;
     position:relative;
   }
   body::before{
     content:'';
     position:absolute;inset:0;pointer-events:none;
-    background:linear-gradient(160deg, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0) 35%, rgba(0,0,0,0) 70%, rgba(0,0,0,0.28) 100%);
+    background:none;
   }
 
   /* ---- desktop icons ---- */
   .icons{
-    position:absolute;top:20px;left:16px;bottom:56px;
+    /* sits inside the wallpaper's "File" panel (left column, under its title) */
+    position:absolute;top:17vh;left:4.5vw;bottom:13vh;
     display:flex;flex-direction:column;flex-wrap:wrap;align-content:flex-start;gap:4px;
+  }
+  /* the wallpaper's "Important" panel (bottom right, under its title) */
+  .icons.important{
+    top:66vh;left:68vw;right:4vw;bottom:auto;
+    flex-direction:row;
   }
   .icon{
     width:84px;padding:8px 4px;border-radius:6px;
@@ -51,12 +57,12 @@
   }
   .icon .glyph img{
     width:100%;height:100%;object-fit:contain;
-    filter:drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+    filter:drop-shadow(0 2px 3px rgba(35,70,111,0.3));
     user-select:none;-webkit-user-drag:none;pointer-events:none;
   }
   .icon span.label{
-    font-size:11.5px;color:#fff;text-align:center;line-height:1.25;
-    text-shadow:0 1px 3px rgba(0,0,0,0.55);
+    font-size:11.5px;font-weight:600;color:#23466f;text-align:center;line-height:1.25;
+    text-shadow:0 0 3px rgba(255,255,255,0.9), 0 0 6px rgba(255,255,255,0.7);
   }
 
   /* ---- windows ---- */
