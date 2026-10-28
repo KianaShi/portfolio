@@ -28,8 +28,8 @@
 
   /* ---- desktop icons ---- */
   .icons{
-    position:absolute;top:20px;left:16px;
-    display:flex;flex-direction:column;gap:4px;
+    position:absolute;top:20px;left:16px;bottom:56px;
+    display:flex;flex-direction:column;flex-wrap:wrap;align-content:flex-start;gap:4px;
   }
   .icon{
     width:84px;padding:8px 4px;border-radius:6px;
@@ -46,13 +46,14 @@
     outline:2px solid var(--glow);outline-offset:2px;
   }
   .icon .glyph{
-    width:38px;height:38px;border-radius:8px;
+    width:52px;height:52px;
     display:flex;align-items:center;justify-content:center;
-    background:var(--chrome);
-    box-shadow:0 2px 0 rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.5);
   }
-  .icon .glyph svg{width:20px;height:20px;stroke:var(--ink);fill:none;stroke-width:1.6;}
-  .icon.trash .glyph svg{stroke:#7a3b3b;}
+  .icon .glyph img{
+    width:100%;height:100%;object-fit:contain;
+    filter:drop-shadow(0 2px 3px rgba(0,0,0,0.35));
+    user-select:none;-webkit-user-drag:none;pointer-events:none;
+  }
   .icon span.label{
     font-size:11.5px;color:#fff;text-align:center;line-height:1.25;
     text-shadow:0 1px 3px rgba(0,0,0,0.55);
